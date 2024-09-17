@@ -14,8 +14,8 @@ This sample application provides an example usage of the Maxim MAX17201 Fuel Gau
 
 # References
 
-- [RV-8803-C7 Component](https://www.maximintegrated.com/en/products/power/battery-management/MAX17201.html/storefront/storefront.html).
-- [RV-8803-C7 Datasheet](https://www.mouser.fr/datasheet/2/609/MAX17201_MAX17215-3469373.pdf).
+- [MAX17201 Component](https://www.maximintegrated.com/en/products/power/battery-management/MAX17201.html/storefront/storefront.html).
+- [MAX17201 Datasheet](https://www.mouser.fr/datasheet/2/609/MAX17201_MAX17215-3469373.pdf).
 
 # Building and Running
 
