@@ -1,0 +1,18 @@
+# Copyright (c) 2024 CATIE
+# SPDX-License-Identifier: Apache-2.0
+
+description: |
+    Zephyr Maxim MAX17201 Fuel Gauge Driver
+
+compatible: "maxim,max17201"
+
+on-bus: i2c
+
+include:
+  - name: fuel-gauge.yaml
+  - name: i2c-device.yaml
+
+properties:
+  alert-gpios:
+    type: phandle-array
+    description: MAX17201 alart signal.

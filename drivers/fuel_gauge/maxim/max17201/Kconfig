@@ -1,0 +1,9 @@
+# Copyright (c) 2024 CATIE
+# SPDX-License-Identifier: Apache-2.0
+
+menuconfig MAX17201
+    bool "Zephyr Maxim MAX17201 Fuel Gauge Driver"
+    default y
+    depends on DT_HAS_MAXIM_MAX17201_ENABLED
+    help
+      Enable driver for Zephyr Maxim MAX17201 Fuel Gauge Driver.
