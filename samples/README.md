@@ -5,6 +5,7 @@ This sample application provides an example usage of the Maxim MAX17201 Fuel Gau
 - Steps
 
 > [!NOTE]
+>
 
 # Requirements
 
