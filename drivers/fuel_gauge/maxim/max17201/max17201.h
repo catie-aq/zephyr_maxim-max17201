@@ -11,6 +11,8 @@
 
 struct max17201_config {
 	struct i2c_dt_spec i2c_bus;
+	uint8_t m5_addr;
+	uint8_t sbs_addr;
 };
 
 struct max17201_data {

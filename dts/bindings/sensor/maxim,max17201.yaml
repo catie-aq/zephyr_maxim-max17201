@@ -13,6 +13,11 @@ include:
   - name: i2c-device.yaml
 
 properties:
+  sbs:
+    type: int
+    const: 0x16
+    default: 0x16
+    description: SBS MAX17201 I2C address.
   alert-gpios:
     type: phandle-array
     description: MAX17201 alart signal.
