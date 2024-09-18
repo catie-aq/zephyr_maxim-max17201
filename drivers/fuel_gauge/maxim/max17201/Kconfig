@@ -5,5 +5,6 @@ menuconfig MAX17201
     bool "Zephyr Maxim MAX17201 Fuel Gauge Driver"
     default y
     depends on DT_HAS_MAXIM_MAX17201_ENABLED
+    select I2C
     help
       Enable driver for Zephyr Maxim MAX17201 Fuel Gauge Driver.
