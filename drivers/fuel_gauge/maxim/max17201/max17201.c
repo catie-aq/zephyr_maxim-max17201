@@ -11,6 +11,12 @@
 
 LOG_MODULE_REGISTER(MAX17201, CONFIG_FUEL_GAUGE_LOG_LEVEL);
 
+static int max17201_set_property(const struct device *dev, fuel_gauge_prop_t prop,
+				 union fuel_gauge_prop_val val)
+{
+	return 0;
+}
+
 static int max17201_get_property(const struct device *dev, fuel_gauge_prop_t prop,
 				 union fuel_gauge_prop_val *val)
 {
@@ -26,6 +32,7 @@ static int max17201_init(const struct device *dev)
 }
 
 static const struct fuel_gauge_driver_api max17201_driver_api = {
+	.set_property = &max17201_set_property,
 	.get_property = &max17201_get_property,
 };
 
