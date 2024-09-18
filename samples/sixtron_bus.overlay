@@ -9,9 +9,9 @@
 &sixtron_i2c {
 	status = "okay";
 
-	max172010: max17201@6C {
+	max172010: max17201@6c {
 		compatible = "maxim,max17201";
-		reg = <0x6C>;
+		reg = <0x6c>;
 		alert-gpios = <&sixtron_connector DIO1 (GPIO_ACTIVE_LOW | GPIO_PULL_UP)>;
 	};
 };
