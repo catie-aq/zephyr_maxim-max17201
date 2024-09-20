@@ -13,7 +13,18 @@ struct max17201_config {
 	struct i2c_dt_spec i2c_bus;
 	uint8_t m5_addr;
 	uint8_t sbs_addr;
+
+	int nb_cell;
+	int rshunt;
+	int capacity;
+	int empty_voltage;
+	bool ext_thermistor1;
+	bool ext_thermistor2;
 };
+
+/* MAX17201 CONFIGURATION */
+#define MAX1720X_DEVICE_NAME_17201 0x01U
+#define MAX1720X_DEVICE_NAME_17205 0x05U
 
 struct max17201_data {
 };
