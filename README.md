@@ -4,12 +4,13 @@ Zephyr Maxim MAX17201 Fuel Gauge Driver driver for Zephyr OS.
 
 Based on [MAX17201 Datasheet](https://www.mouser.fr/datasheet/2/609/MAX17201_MAX17215-3469373.pdf). Implemented feature:
 
-- [ ] Initialize MAX17201
+- [X] Initialize MAX17201
+- [ ] Configure MAX17201
 - [ ] Configure  Cell number
-- [ ] Configure Capacity
+- [ ] Configure Design Capacity
 - [ ] Configure External thermistor
 - [ ] Configure Empty Voltage
-- [ ] Check design Capacity to init configuration or not
+- [X] Check design Capacity to init configuration or not
 - [ ] Alert interrupt
 - [X] Set Prop API
 - [ ] Prop : State of Charge
