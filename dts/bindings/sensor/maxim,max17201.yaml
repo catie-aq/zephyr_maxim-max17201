@@ -15,9 +15,32 @@ include:
 properties:
   sbs:
     type: int
-    const: 0x16
-    default: 0x16
+    required: true
+    const: 0x0B
     description: SBS MAX17201 I2C address.
+  nb-cell:
+    type: int
+    required: true
+    const: 1
+    description: MAX17201 number of cells managed.
+  rshunt:
+    type: int
+    required: true
+    description: Shunt resistance in mΩ.
+  capacity:
+    type: int
+    required: true
+    description: Cells max capacity in mAh.
+  empty-voltage:
+    type: int
+    required: true
+    description: Voltage threshold for empty detection in mV.
+  external-thermistor1:
+    type: boolean
+    description: Enable external thermistor 1.
+  external-thermistor2:
+    type: boolean
+    description: Enable external thermistor 2.
   alert-gpios:
     type: phandle-array
     description: MAX17201 alart signal.
