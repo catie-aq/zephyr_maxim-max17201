@@ -11,13 +11,22 @@
 
 LOG_MODULE_REGISTER(MAX17201, CONFIG_FUEL_GAUGE_LOG_LEVEL);
 
-int max17201_i2c_read_dt(const struct device *dev, uint8_t reg_addr, uint16_t *result)
+static int max17201_i2c_read(const struct device *dev, uint16_t reg_addr, uint16_t *result)
 {
 	const struct max17201_config *config = dev->config;
+	uint16_t addr;
 	uint8_t reg[2];
 	int err;
 
-	err = i2c_write_read_dt(&config->i2c_bus, &reg_addr, sizeof(reg_addr), reg, sizeof(reg));
+	if (MAX1720X_REGISTER_IS_SBS(reg_addr)) {
+		addr = config->sbs_addr;
+	} else {
+		addr = config->m5_addr;
+	}
+	reg_addr = reg_addr & 0x00FFU;
+	const struct i2c_dt_spec i2c = config->i2c_bus;
+
+	err = i2c_write_read(i2c.bus, addr, &reg_addr, sizeof(reg_addr), reg, sizeof(reg));
 	if (err != 0) {
 		LOG_ERR("[ER] Unable to read register, error %d", err);
 		return err;
@@ -28,14 +37,14 @@ int max17201_i2c_read_dt(const struct device *dev, uint8_t reg_addr, uint16_t *r
 	return 0;
 }
 
-int max17201_i2c_write_dt(const struct device *dev, uint8_t reg_addr, uint16_t value)
+static int max17201_i2c_write(const struct device *dev, uint8_t reg_addr, uint16_t value)
 {
 	const struct max17201_config *config = dev->config;
 	uint8_t reg[2];
 	int err;
 
-	reg[0] = value & 0xFF;
-	reg[1] = (value >> 8) & 0xFF;
+	reg[0] = value & 0x00FFU;
+	reg[1] = (value >> 8) & 0x00FFU;
 	err = i2c_burst_write_dt(&config->i2c_bus, reg_addr, reg, sizeof(reg));
 	if (err != 0) {
 		LOG_ERR("[EW] Unable to write register, error %d", err);
@@ -73,7 +82,7 @@ static int max17201_init(const struct device *dev)
 	LOG_INF("SB ADDR: [0x%02X]", config->sbs_addr);
 
 	uint16_t reg;
-	err = max17201_i2c_read_dt(dev, 0x21, &reg);
+	err = max17201_i2c_read(dev, 0x21, &reg);
 	if (err < 0) {
 		LOG_ERR("[EI_2] Unable to read MAX_ID, error %d", err);
 		return err;
@@ -99,12 +108,18 @@ static int max17201_init(const struct device *dev)
 	LOG_INF("EXT THERMISTOR: [%s][%s]", config->ext_thermistor1 ? "x" : " ",
 		config->ext_thermistor2 ? "x" : " ");
 
+	err = max17201_i2c_read(dev, MAX1720X_REGISTER_DESIGN_CAP, &reg);
+	if (err < 0) {
+		LOG_ERR("[EI_8] Unable to read DesignCap, error %d", err);
+		return err;
+	}
+
 	/* 750 mAh capacity is default -> MAX17201 need configuration */
 	if (MAX1720X_COMPUTE_ZEPHYR_CAPACITY_MAH(reg, config->rshunt) == 750) {
 		LOG_INF("MAX17201 Configuration...");
 		LOG_DBG("Restoring MAX17201 non-volatile memory");
-		err = max17201_i2c_write_dt(dev, MAX1720X_REGISTER_COMMAND,
-					    MAX1720X_COMMAND_HARDWARE_RESET);
+		err = max17201_i2c_write(dev, MAX1720X_REGISTER_COMMAND,
+					 MAX1720X_COMMAND_HARDWARE_RESET);
 		if (err < 0) {
 			LOG_ERR("[EI_4] Unable to read MAX_ID, error %d", err);
 			return err;
@@ -113,28 +128,28 @@ static int max17201_init(const struct device *dev)
 	}
 	LOG_INF("MAX17201 configured!");
 
-	err = max17201_i2c_read_dt(dev, MAX1720X_REGISTER_AGE, &reg);
+	err = max17201_i2c_read(dev, MAX1720X_REGISTER_AGE, &reg);
 	if (err < 0) {
 		LOG_ERR("[EI_5] Unable to read Age, error %d", err);
 		return err;
 	}
 	LOG_INF("AGE: [%d%%]", MAX1720X_COMPUTE_PERCENTAGE(reg));
 
-	err = max17201_i2c_read_dt(dev, MAX1720X_REGISTER_TEMP, &reg);
+	err = max17201_i2c_read(dev, MAX1720X_REGISTER_TEMP, &reg);
 	if (err < 0) {
 		LOG_ERR("[EI_6] Unable to read Temp, error %d", err);
 		return err;
 	}
 	LOG_INF("TEMP: [%d C]", MAX1720X_COMPUTE_TEMPERATURE(reg));
 
-	err = max17201_i2c_read_dt(dev, MAX1720X_REGISTER_TTE, &reg);
+	err = max17201_i2c_read(dev, MAX1720X_REGISTER_TTE, &reg);
 	if (err < 0) {
 		LOG_ERR("[EI_7] Unable to read TTE, error %d", err);
 		return err;
 	}
 	LOG_INF("TIME TO EMPTY: [%d s]", MAX1720X_COMPUTE_TIME(reg));
 
-	err = max17201_i2c_read_dt(dev, MAX1720X_REGISTER_DESIGN_CAP, &reg);
+	err = max17201_i2c_read(dev, MAX1720X_REGISTER_DESIGN_CAP, &reg);
 	if (err < 0) {
 		LOG_ERR("[EI_8] Unable to read DesignCap, error %d", err);
 		return err;
