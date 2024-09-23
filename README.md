@@ -9,7 +9,7 @@ Based on [MAX17201 Datasheet](https://www.mouser.fr/datasheet/2/609/MAX17201_MAX
 - [X] Configure Cell number
 - [ ] Configure Design Capacity
 - [X] Configure External thermistor
-- [ ] Configure Empty Voltage
+- [X] Configure Empty Voltage
 - [X] Check design Capacity to init configuration or not
 - [ ] Alert interrupt
 - [X] Set Prop API
