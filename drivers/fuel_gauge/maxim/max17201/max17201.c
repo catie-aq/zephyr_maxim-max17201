@@ -37,15 +37,24 @@ static int max17201_i2c_read(const struct device *dev, uint16_t reg_addr, uint16
 	return 0;
 }
 
-static int max17201_i2c_write(const struct device *dev, uint8_t reg_addr, uint16_t value)
+static int max17201_i2c_write(const struct device *dev, uint16_t reg_addr, uint16_t value)
 {
 	const struct max17201_config *config = dev->config;
+	uint16_t addr;
 	uint8_t reg[2];
 	int err;
 
+	if (MAX1720X_REGISTER_IS_SBS(reg_addr)) {
+		addr = config->sbs_addr;
+	} else {
+		addr = config->m5_addr;
+	}
+	reg_addr = reg_addr & 0x00FFU;
+	const struct i2c_dt_spec i2c = config->i2c_bus;
 	reg[0] = value & 0x00FFU;
 	reg[1] = (value >> 8) & 0x00FFU;
-	err = i2c_burst_write_dt(&config->i2c_bus, reg_addr, reg, sizeof(reg));
+
+	err = i2c_burst_write(i2c.bus, addr, reg_addr, reg, sizeof(reg));
 	if (err != 0) {
 		LOG_ERR("[EW] Unable to write register, error %d", err);
 		return err;
