@@ -103,6 +103,26 @@ static int max17201_configure_thermistor(const struct device *dev)
 	return 0;
 }
 
+static int max17201_configure_empty_voltage(const struct device *dev)
+{
+	const struct max17201_config *config = dev->config;
+	int err;
+
+	uint16_t value = 0x0000U;
+	value |= ((config->empty_voltage + MAX1720X_V_EMPTY_HYSTERESIS) *
+		  MAX1720X_V_EMPTY_CONVERSION_VR) &
+		 0x7FU;
+	value |= (((config->empty_voltage) * MAX1720X_V_EMPTY_CONVERSION_VR) & 0x01FFU) << 7;
+
+	err = max17201_i2c_write(dev, MAX1720X_REGISTER_N_V_EMPTY, value);
+	if (err < 0) {
+		LOG_ERR("[EV_1] Unable to write nVEmpty, error %d", err);
+		return err;
+	}
+
+	return 0;
+}
+
 static int max17201_configuration(const struct device *dev)
 {
 	const struct max17201_config *config = dev->config;
@@ -188,6 +208,13 @@ static int max17201_configuration(const struct device *dev)
 
 	// EXT Thermistors configuration
 	err = max17201_configure_thermistor(dev);
+	if (err < 0) {
+		LOG_ERR("[EC_8] Unable to configure thermistors, error %d", err);
+		return err;
+	}
+
+	// Empty voltage configuration
+	err = max17201_configure_empty_voltage(dev);
 	if (err < 0) {
 		LOG_ERR("[EC_8] Unable to configure thermistors, error %d", err);
 		return err;

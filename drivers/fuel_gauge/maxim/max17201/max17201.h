@@ -13,19 +13,19 @@
 #define MAX1720X_NTC_MODE_FENWAL 0x01U
 #define MAX1720X_NTC_MODE_TDK    0x02U
 
-static uint16_t ntc_gain[3] = {
+static const uint16_t ntc_gain[3] = {
 	0xEE56,
 	0xF49A,
 	0xF284,
 };
 
-static uint16_t ntc_offfset[3] = {
+static const uint16_t ntc_offfset[3] = {
 	0x1DA4,
 	0x16A1,
 	0x18E8,
 };
 
-static uint16_t ntc_curve[3] = {
+static const uint16_t ntc_curve[3] = {
 	0x0025,
 	0x0064,
 	0x0035,
@@ -52,10 +52,13 @@ struct max17201_config {
 };
 
 /* MAX17201 CONFIGURATION */
-#define MAX1720X_DEVICE_NAME_17201 0x01U
-#define MAX1720X_DEVICE_NAME_17205 0x05U
-#define MAX1720X_ENABLE            0x1U
-#define MAX1720X_DISABLE           0x0U
+#define MAX1720X_DEVICE_NAME_17201     0x01U
+#define MAX1720X_DEVICE_NAME_17205     0x05U
+#define MAX1720X_ENABLE                0x1U
+#define MAX1720X_DISABLE               0x0U
+#define MAX1720X_V_EMPTY_HYSTERESIS    500
+#define MAX1720X_V_EMPTY_CONVERSION_VE (1 / 10)
+#define MAX1720X_V_EMPTY_CONVERSION_VR (1 / 40)
 
 #define MAX17201_MAX_CELLS      0x01U
 #define MAX17201_CELL_BALANCING 0x00U
