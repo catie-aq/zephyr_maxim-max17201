@@ -38,7 +38,8 @@ struct max17201_config {
 #define MAX1720X_REGISTER_SBS_LOW  0x100U
 #define MAX1720X_REGISTER_SBS_HIGH 0x17FU
 
-#define MAX1720X_REGISTER_IS_M5(reg) ()
+#define MAX1720X_REGISTER_IS_SBS(reg)                                                              \
+	((MAX1720X_REGISTER_PAGE_ONE_HIGH < reg) && (reg < MAX1720X_REGISTER_PAGE_TWO_LOW))
 
 /* MAX1720X REGISTERS */
 #define MAX1720X_REGISTER_STATUS      0x000U
@@ -241,7 +242,6 @@ struct max17201_config {
 #define MAX1720X_REGISTER_D_P_ACC     0x046U
 #define MAX1720X_REGISTER_V_F_SOC     0x0FFU
 #define MAX1720X_REGISTER_V_F_OCV     0x0FBU
-#define MAX1720X_REGISTER_AV_CAP      0x0AFU
 #define MAX1720X_REGISTER_V_F_REM_CAP 0x04AU
 
 /* MAX1720X Status REGISTERS */
