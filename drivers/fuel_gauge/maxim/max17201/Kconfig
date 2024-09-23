@@ -8,3 +8,32 @@ menuconfig MAX17201
     select I2C
     help
       Enable driver for Zephyr Maxim MAX17201 Fuel Gauge Driver.
+
+if MAX17201
+
+config MAX17201_INTERNAL_TEMP
+    bool "Enable internal temperature measure"
+    default n
+    depends on MAX17201
+    help
+      Enable MAX17201 to measure internal temperature
+
+choice
+    prompt "Fuel Gauge Temp input"
+    default MAX17201_FG_INPUT_EXTERNAL
+
+config MAX17201_FG_INPUT_INTERNAL
+    bool "Internal Temperature input"
+    depends on MAX17201
+
+config MAX17201_FG_INPUT_EXTERNAL
+    bool "External Thermistors input"
+    depends on MAX17201
+
+config MAX17201_FG_INPUT_REGISTER
+    bool "Registers input"
+    depends on MAX17201
+
+endchoice
+
+endif # MAX17201
