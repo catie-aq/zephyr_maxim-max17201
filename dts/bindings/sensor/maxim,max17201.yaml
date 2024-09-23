@@ -41,6 +41,14 @@ properties:
   external-thermistor2:
     type: boolean
     description: Enable external thermistor 2.
+  ntc-thermistors:
+    type: string
+    description: Select NTC curve.
+    enum:
+        - "Murata"
+        - "Fenwal"
+        - "TDK"
+    default: "Murata"
   alert-gpios:
     type: phandle-array
     description: MAX17201 alart signal.

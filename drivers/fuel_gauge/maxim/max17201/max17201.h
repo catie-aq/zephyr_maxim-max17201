@@ -9,6 +9,34 @@
 #include <zephyr/drivers/i2c.h>
 #include <zephyr/drivers/fuel_gauge.h>
 
+#define MAX1720X_NTC_MODE_MURATA 0x00U
+#define MAX1720X_NTC_MODE_FENWAL 0x01U
+#define MAX1720X_NTC_MODE_TDK    0x02U
+
+static uint16_t ntc_gain[3] = {
+	0xEE56,
+	0xF49A,
+	0xF284,
+};
+
+static uint16_t ntc_offfset[3] = {
+	0x1DA4,
+	0x16A1,
+	0x18E8,
+};
+
+static uint16_t ntc_curve[3] = {
+	0x0025,
+	0x0064,
+	0x0035,
+};
+
+enum thermistor_ntc_mode {
+	MURATA = MAX1720X_NTC_MODE_MURATA,
+	FENWAL = MAX1720X_NTC_MODE_FENWAL,
+	TDK = MAX1720X_NTC_MODE_TDK,
+};
+
 struct max17201_config {
 	struct i2c_dt_spec i2c_bus;
 	uint8_t m5_addr;
@@ -20,6 +48,7 @@ struct max17201_config {
 	int empty_voltage;
 	bool ext_thermistor1;
 	bool ext_thermistor2;
+	enum thermistor_ntc_mode ntc_thermistors;
 };
 
 /* MAX17201 CONFIGURATION */

@@ -159,6 +159,26 @@ static int max1720_configuration(const struct device *dev)
 		return err;
 	}
 
+	// EXT Thermistors configuration
+	err = max17201_i2c_write(dev, MAX1720X_REGISTER_N_T_GAIN,
+				 ntc_gain[config->ntc_thermistors]);
+	if (err < 0) {
+		LOG_ERR("[EC_8] Unable to write nTGain, error %d", err);
+		return err;
+	}
+	err = max17201_i2c_write(dev, MAX1720X_REGISTER_N_T_OFF,
+				 ntc_offfset[config->ntc_thermistors]);
+	if (err < 0) {
+		LOG_ERR("[EC_9] Unable to write nTOff, error %d", err);
+		return err;
+	}
+	err = max17201_i2c_write(dev, MAX1720X_REGISTER_N_T_CURVE,
+				 ntc_curve[config->ntc_thermistors]);
+	if (err < 0) {
+		LOG_ERR("[EC_A] Unable to write nTCurve, error %d", err);
+		return err;
+	}
+
 	return 0;
 }
 
@@ -204,6 +224,12 @@ static int max17201_init(const struct device *dev)
 	LOG_INF("EMPTY VOLTAGE: [%d mV]", config->empty_voltage);
 	LOG_INF("EXT THERMISTOR: [%s][%s]", config->ext_thermistor1 ? "x" : " ",
 		config->ext_thermistor2 ? "x" : " ");
+	LOG_INF("NTC THERMISTOR: [%d idx]", config->ntc_thermistors);
+	char internal_temp = ' ';
+#if defined(CONFIG_MAX17201_INTERNAL_TEMP)
+	internal_temp = 'x';
+#endif
+	LOG_INF("INTERNAL TEMP: [%c]", internal_temp);
 
 	err = max17201_i2c_read(dev, MAX1720X_REGISTER_DESIGN_CAP, &reg);
 	if (err < 0) {
@@ -250,7 +276,7 @@ static int max17201_init(const struct device *dev)
 
 	err = max17201_i2c_read(dev, MAX1720X_REGISTER_DESIGN_CAP, &reg);
 	if (err < 0) {
-		LOG_ERR("[EI_10] Unable to read DesignCap, error %d", err);
+		LOG_ERR("[EI_A] Unable to read DesignCap, error %d", err);
 		return err;
 	}
 	LOG_INF("DESIGN CAP: [%d mAh]", MAX1720X_COMPUTE_ZEPHYR_CAPACITY_MAH(reg, config->rshunt));
@@ -274,6 +300,7 @@ static const struct fuel_gauge_driver_api max17201_driver_api = {
 		.empty_voltage = DT_INST_PROP(n, empty_voltage),                                   \
 		.ext_thermistor1 = DT_INST_PROP(n, external_thermistor1),                          \
 		.ext_thermistor2 = DT_INST_PROP(n, external_thermistor2),                          \
+		.ntc_thermistors = DT_INST_ENUM_IDX(n, ntc_thermistors),                           \
 	};                                                                                         \
 	static struct max17201_data max17201_data_##n;                                             \
 	DEVICE_DT_INST_DEFINE(n, max17201_init, NULL, &max17201_data_##n, &max17201_config_##n,    \
