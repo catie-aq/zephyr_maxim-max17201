@@ -5,7 +5,7 @@ Zephyr Maxim MAX17201 Fuel Gauge Driver driver for Zephyr OS.
 Based on [MAX17201 Datasheet](https://www.mouser.fr/datasheet/2/609/MAX17201_MAX17215-3469373.pdf). Implemented feature:
 
 - [X] Initialize MAX17201
-- [ ] Configure MAX17201
+- [X] Configure MAX17201
 - [ ] Configure  Cell number
 - [ ] Configure Design Capacity
 - [ ] Configure External thermistor
