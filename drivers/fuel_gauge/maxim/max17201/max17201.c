@@ -76,7 +76,34 @@ static int max17201_get_property(const struct device *dev, fuel_gauge_prop_t pro
 	return 0;
 }
 
-static int max1720_configuration(const struct device *dev)
+static int max17201_configure_thermistor(const struct device *dev)
+{
+	const struct max17201_config *config = dev->config;
+	int err;
+
+	err = max17201_i2c_write(dev, MAX1720X_REGISTER_N_T_GAIN,
+				 ntc_gain[config->ntc_thermistors]);
+	if (err < 0) {
+		LOG_ERR("[ET_1] Unable to write nTGain, error %d", err);
+		return err;
+	}
+	err = max17201_i2c_write(dev, MAX1720X_REGISTER_N_T_OFF,
+				 ntc_offfset[config->ntc_thermistors]);
+	if (err < 0) {
+		LOG_ERR("[ET_2] Unable to write nTOff, error %d", err);
+		return err;
+	}
+	err = max17201_i2c_write(dev, MAX1720X_REGISTER_N_T_CURVE,
+				 ntc_curve[config->ntc_thermistors]);
+	if (err < 0) {
+		LOG_ERR("[ET_3] Unable to write nTCurve, error %d", err);
+		return err;
+	}
+
+	return 0;
+}
+
+static int max17201_configuration(const struct device *dev)
 {
 	const struct max17201_config *config = dev->config;
 	struct max17201_data *data = dev->data;
@@ -160,22 +187,9 @@ static int max1720_configuration(const struct device *dev)
 	}
 
 	// EXT Thermistors configuration
-	err = max17201_i2c_write(dev, MAX1720X_REGISTER_N_T_GAIN,
-				 ntc_gain[config->ntc_thermistors]);
+	err = max17201_configure_thermistor(dev);
 	if (err < 0) {
-		LOG_ERR("[EC_8] Unable to write nTGain, error %d", err);
-		return err;
-	}
-	err = max17201_i2c_write(dev, MAX1720X_REGISTER_N_T_OFF,
-				 ntc_offfset[config->ntc_thermistors]);
-	if (err < 0) {
-		LOG_ERR("[EC_9] Unable to write nTOff, error %d", err);
-		return err;
-	}
-	err = max17201_i2c_write(dev, MAX1720X_REGISTER_N_T_CURVE,
-				 ntc_curve[config->ntc_thermistors]);
-	if (err < 0) {
-		LOG_ERR("[EC_A] Unable to write nTCurve, error %d", err);
+		LOG_ERR("[EC_8] Unable to configure thermistors, error %d", err);
 		return err;
 	}
 
@@ -249,7 +263,11 @@ static int max17201_init(const struct device *dev)
 		}
 		k_sleep(K_MSEC(MAX1720X_TIMING_POWER_ON_RESET_MS));
 
-		max1720_configuration(dev);
+		err = max17201_configuration(dev);
+		if (err < 0) {
+			LOG_ERR("[EI_7] Unable to configure DEVICE, error %d", err);
+			return err;
+		}
 	}
 	LOG_INF("MAX17201 configured!");
 
