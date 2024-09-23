@@ -101,15 +101,45 @@ static int max17201_init(const struct device *dev)
 
 	/* 750 mAh capacity is default -> MAX17201 need configuration */
 	if (MAX1720X_COMPUTE_ZEPHYR_CAPACITY_MAH(reg, config->rshunt) == 750) {
-		LOG_INF("MAX17201 need to be configured!");
-		err = max17201_i2c_write_dt(dev, 0x60, 0x000F);
+		LOG_INF("MAX17201 Configuration...");
+		LOG_DBG("Restoring MAX17201 non-volatile memory");
+		err = max17201_i2c_write_dt(dev, MAX1720X_REGISTER_COMMAND,
+					    MAX1720X_COMMAND_HARDWARE_RESET);
 		if (err < 0) {
 			LOG_ERR("[EI_4] Unable to read MAX_ID, error %d", err);
 			return err;
 		}
-		k_sleep(K_MSEC(10));
+		k_sleep(K_MSEC(MAX1720X_TIMING_POWER_ON_RESET_MS));
 	}
 	LOG_INF("MAX17201 configured!");
+
+	err = max17201_i2c_read_dt(dev, MAX1720X_REGISTER_AGE, &reg);
+	if (err < 0) {
+		LOG_ERR("[EI_5] Unable to read Age, error %d", err);
+		return err;
+	}
+	LOG_INF("AGE: [%d%%]", MAX1720X_COMPUTE_PERCENTAGE(reg));
+
+	err = max17201_i2c_read_dt(dev, MAX1720X_REGISTER_TEMP, &reg);
+	if (err < 0) {
+		LOG_ERR("[EI_6] Unable to read Temp, error %d", err);
+		return err;
+	}
+	LOG_INF("TEMP: [%d C]", MAX1720X_COMPUTE_TEMPERATURE(reg));
+
+	err = max17201_i2c_read_dt(dev, MAX1720X_REGISTER_TTE, &reg);
+	if (err < 0) {
+		LOG_ERR("[EI_7] Unable to read TTE, error %d", err);
+		return err;
+	}
+	LOG_INF("TIME TO EMPTY: [%d s]", MAX1720X_COMPUTE_TIME(reg));
+
+	err = max17201_i2c_read_dt(dev, MAX1720X_REGISTER_DESIGN_CAP, &reg);
+	if (err < 0) {
+		LOG_ERR("[EI_8] Unable to read DesignCap, error %d", err);
+		return err;
+	}
+	LOG_INF("DESIGN CAP: [%d mAh]", MAX1720X_COMPUTE_ZEPHYR_CAPACITY_MAH(reg, config->rshunt));
 
 	return 0;
 }
