@@ -7,7 +7,7 @@ Based on [MAX17201 Datasheet](https://www.mouser.fr/datasheet/2/609/MAX17201_MAX
 - [X] Initialize MAX17201
 - [X] Configure MAX17201
 - [X] Configure Cell number
-- [ ] Configure Design Capacity
+- [X] Configure Design Capacity
 - [X] Configure External thermistor
 - [X] Configure Empty Voltage
 - [X] Check design Capacity to init configuration or not
