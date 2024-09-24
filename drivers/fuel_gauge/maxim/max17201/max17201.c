@@ -81,8 +81,7 @@ static int max17201_get_property(const struct device *dev, fuel_gauge_prop_t pro
 	case FUEL_GAUGE_AVG_CURRENT:
 		err = max17201_i2c_read(dev, MAX1720X_REGISTER_AVG_CURRENT, &reg);
 		if (err < 0) {
-			LOG_ERR("[EP_1] Unable to read AvgCurrent, error %d",
-				MAX1720X_COMPUTE_PERCENTAGE(err));
+			LOG_ERR("[EP_1] Unable to read AvgCurrent, error %d", err);
 			return err;
 		}
 		val->avg_current = MAX1720X_COMPUTE_ZEPHYR_CURRENT_MA(reg, config->rshunt);
@@ -91,8 +90,16 @@ static int max17201_get_property(const struct device *dev, fuel_gauge_prop_t pro
 	case FUEL_GAUGE_CURRENT:
 		err = max17201_i2c_read(dev, MAX1720X_REGISTER_CURRENT, &reg);
 		if (err < 0) {
-			LOG_ERR("[EP_2] Unable to read Current, error %d",
-				MAX1720X_COMPUTE_PERCENTAGE(err));
+			LOG_ERR("[EP_2] Unable to read Current, error %d", err);
+			return err;
+		}
+		val->avg_current = MAX1720X_COMPUTE_ZEPHYR_CURRENT_MA(reg, config->rshunt);
+		break;
+
+	case FUEL_GAUGE_CYCLE_COUNT:
+		err = max17201_i2c_read(dev, MAX1720X_REGISTER_CYCLES, &reg);
+		if (err < 0) {
+			LOG_ERR("[EP_2] Unable to read Cycles, error %d", err);
 			return err;
 		}
 		val->avg_current = MAX1720X_COMPUTE_ZEPHYR_CURRENT_MA(reg, config->rshunt);
