@@ -336,7 +336,7 @@ struct max17201_config {
 #define MAX1720X_COMPUTE_REG_CAPACITY(reg, rshunt) (reg * rshunt / 5)
 
 /* ZEPHYR Units Compute */
-#define MAX1720X_ZEPHYR_CURRENT_MA(val)   (int)(val)             // mA
+#define MAX1720X_ZEPHYR_CURRENT_MA(val)   (int)(val)             // uA
 #define MAX1720X_ZEPHYR_CAPACITY_UAH(val) (uint32_t)(val * 1000) // uAh
 #define MAX1720X_ZEPHYR_CAPACITY_MAH(val) (uint16_t)(val)        // mAh
 

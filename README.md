@@ -14,7 +14,7 @@ Based on [MAX17201 Datasheet](https://www.mouser.fr/datasheet/2/609/MAX17201_MAX
 - [ ] Alert interrupt
 - [X] Set Prop API
 - [ ] Prop : State of Charge
-- [ ] Prop : Current
+- [X] Prop : Current
 - [ ] Prop : Min Current
 - [X] Prop : Avg Current
 - [ ] Prop : Max Current
