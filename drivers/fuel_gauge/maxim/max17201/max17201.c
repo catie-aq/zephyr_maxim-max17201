@@ -85,7 +85,17 @@ static int max17201_get_property(const struct device *dev, fuel_gauge_prop_t pro
 				MAX1720X_COMPUTE_PERCENTAGE(err));
 			return err;
 		}
-		val->avg_current = MAX1720X_COMPUTE_CURRENT(reg, config->rshunt);
+		val->avg_current = MAX1720X_COMPUTE_ZEPHYR_CURRENT_MA(reg, config->rshunt);
+		break;
+
+	case FUEL_GAUGE_CURRENT:
+		err = max17201_i2c_read(dev, MAX1720X_REGISTER_CURRENT, &reg);
+		if (err < 0) {
+			LOG_ERR("[EP_2] Unable to read Current, error %d",
+				MAX1720X_COMPUTE_PERCENTAGE(err));
+			return err;
+		}
+		val->avg_current = MAX1720X_COMPUTE_ZEPHYR_CURRENT_MA(reg, config->rshunt);
 		break;
 
 	default:

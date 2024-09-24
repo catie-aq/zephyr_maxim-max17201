@@ -326,7 +326,7 @@ struct max17201_config {
 #define MAX1720X_COMPUTE_CAPACITY(reg, rshunt) (reg * 5 / rshunt)
 #define MAX1720X_COMPUTE_PERCENTAGE(reg)       (int)((reg >> 8) / 2.56)
 #define MAX1720X_COMPUTE_VOLTAGE(reg)          (reg / 12.8)
-#define MAX1720X_COMPUTE_CURRENT(reg, rshunt)  (int)((MAX1720X_COMPUTE_SIGN(reg)) * 1562.5 / rshunt)
+#define MAX1720X_COMPUTE_CURRENT(reg, rshunt)  ((MAX1720X_COMPUTE_SIGN(reg)) * 1562.5 / rshunt)
 #define MAX1720X_COMPUTE_TEMPERATURE(reg)      (((signed int)(reg)) >> 8)
 #define MAX1720X_COMPUTE_RESISTENCE(reg)       (reg / 4096)
 #define MAX1720X_COMPUTE_TIME(reg)             (int)(reg * 5.625)
@@ -336,9 +336,12 @@ struct max17201_config {
 #define MAX1720X_COMPUTE_REG_CAPACITY(reg, rshunt) (reg * rshunt / 5)
 
 /* ZEPHYR Units Compute */
+#define MAX1720X_ZEPHYR_CURRENT_MA(val)   (int)(val)             // mA
 #define MAX1720X_ZEPHYR_CAPACITY_UAH(val) (uint32_t)(val * 1000) // uAh
 #define MAX1720X_ZEPHYR_CAPACITY_MAH(val) (uint16_t)(val)        // mAh
 
+#define MAX1720X_COMPUTE_ZEPHYR_CURRENT_MA(reg, rshunt)                                            \
+	(MAX1720X_ZEPHYR_CURRENT_MA(MAX1720X_COMPUTE_CURRENT(reg, rshunt))) // mA
 #define MAX1720X_COMPUTE_ZEPHYR_CAPACITY_UAH(reg, rshunt)                                          \
 	(MAX1720X_ZEPHYR_CAPACITY_UAH(MAX1720X_COMPUTE_CAPACITY(reg, rshunt)))
 #define MAX1720X_COMPUTE_ZEPHYR_CAPACITY_MAH(reg, rshunt)                                          \
