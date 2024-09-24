@@ -67,12 +67,32 @@ static int max17201_i2c_write(const struct device *dev, uint16_t reg_addr, uint1
 static int max17201_set_property(const struct device *dev, fuel_gauge_prop_t prop,
 				 union fuel_gauge_prop_val val)
 {
-	return 0;
+	return -ENOTSUP;
 }
 
 static int max17201_get_property(const struct device *dev, fuel_gauge_prop_t prop,
 				 union fuel_gauge_prop_val *val)
 {
+	const struct max17201_config *config = dev->config;
+	uint16_t reg;
+	int err;
+
+	switch (prop) {
+	case FUEL_GAUGE_AVG_CURRENT:
+		err = max17201_i2c_read(dev, MAX1720X_REGISTER_AVG_CURRENT, &reg);
+		if (err < 0) {
+			LOG_ERR("[EP_1] Unable to read AvgCurrent, error %d",
+				MAX1720X_COMPUTE_PERCENTAGE(err));
+			return err;
+		}
+		val->avg_current = MAX1720X_COMPUTE_CURRENT(reg, config->rshunt);
+		break;
+
+	default:
+		LOG_ERR("[EP_X] UNSUPPORTED property!!");
+		return -ENOTSUP;
+	}
+
 	return 0;
 }
 
@@ -150,6 +170,28 @@ static int max17201_configure_design_capacity(const struct device *dev)
 		MAX1720X_COMPUTE_REG_CAPACITY(config->capacity * 1.1, config->rshunt));
 	if (err < 0) {
 		LOG_ERR("[ED_4] Unable to write nFullCapNom, error %d", err);
+		return err;
+	}
+
+	return 0;
+}
+
+static int max17201_configure_avg_time(const struct device *dev)
+{
+	uint16_t reg;
+	int err;
+
+	err = max17201_i2c_read(dev, MAX1720X_REGISTER_N_FULL_CAP_NOM, &reg);
+	if (err < 0) {
+		LOG_ERR("[ET_1] Unable to read nFilterCfg, error %d", err);
+		return err;
+	}
+
+	reg &= MAX1720X_MASK_FILTER_AVG_CURRENT;
+	reg |= MAX1720X_AVG_CURRENT_TIMING;
+	err = max17201_i2c_write(dev, MAX1720X_REGISTER_N_FILTER_CFG, reg);
+	if (err < 0) {
+		LOG_ERR("[ET_2] Unable to write nFilterCfg, error %d", err);
 		return err;
 	}
 
@@ -269,10 +311,17 @@ static int max17201_configuration(const struct device *dev)
 		return err;
 	}
 
+	// Filter timing configuration
+	err = max17201_configure_avg_time(dev);
+	if (err < 0) {
+		LOG_ERR("[EC_C] Unable to configure design capacity, error %d", err);
+		return err;
+	}
+
 	// Restart Firmeware
 	err = max17201_i2c_write(dev, MAX1720X_REGISTER_CONFIG_2, MAX1720X_COMMAND_SOFTWARE_RESET);
 	if (err < 0) {
-		LOG_ERR("[EC_C] Unable to write COMMAND, error %d", err);
+		LOG_ERR("[EC_D] Unable to write COMMAND, error %d", err);
 		return err;
 	}
 	k_sleep(K_MSEC(MAX1720X_TIMING_POWER_ON_RESET_MS));
@@ -280,10 +329,9 @@ static int max17201_configuration(const struct device *dev)
 	/* PackCfg configuration */
 	err = max17201_i2c_write(dev, MAX1720X_REGISTER_N_PACK_CFG, config_reg);
 	if (err < 0) {
-		LOG_ERR("[EC_D] Unable to write nPackCfg, error %d", err);
+		LOG_ERR("[EC_E] Unable to write nPackCfg, error %d", err);
 		return err;
 	}
-
 	k_sleep(K_MSEC(MAX1720X_TIMING_CONFIG_ACKNOLEDGE_MS));
 
 	return 0;
@@ -355,34 +403,6 @@ static int max17201_init(const struct device *dev)
 		}
 	}
 	LOG_INF("MAX17201 configured!");
-
-	err = max17201_i2c_read(dev, MAX1720X_REGISTER_AGE, &reg);
-	if (err < 0) {
-		LOG_ERR("[EI_7] Unable to read Age, error %d", err);
-		return err;
-	}
-	LOG_INF("AGE: [%d%%]", MAX1720X_COMPUTE_PERCENTAGE(reg));
-
-	err = max17201_i2c_read(dev, MAX1720X_REGISTER_TEMP, &reg);
-	if (err < 0) {
-		LOG_ERR("[EI_8] Unable to read Temp, error %d", err);
-		return err;
-	}
-	LOG_INF("TEMP: [%d C]", MAX1720X_COMPUTE_TEMPERATURE(reg));
-
-	err = max17201_i2c_read(dev, MAX1720X_REGISTER_TTE, &reg);
-	if (err < 0) {
-		LOG_ERR("[EI_9] Unable to read TTE, error %d", err);
-		return err;
-	}
-	LOG_INF("TIME TO EMPTY: [%d s]", MAX1720X_COMPUTE_TIME(reg));
-
-	err = max17201_i2c_read(dev, MAX1720X_REGISTER_DESIGN_CAP, &reg);
-	if (err < 0) {
-		LOG_ERR("[EI_A] Unable to read DesignCap, error %d", err);
-		return err;
-	}
-	LOG_INF("DESIGN CAP: [%d mAh]", MAX1720X_COMPUTE_ZEPHYR_CAPACITY_MAH(reg, config->rshunt));
 
 	return 0;
 }

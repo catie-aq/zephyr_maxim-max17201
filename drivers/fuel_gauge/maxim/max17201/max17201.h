@@ -56,6 +56,7 @@ struct max17201_config {
 #define MAX1720X_DEVICE_NAME_17205  0x05U
 #define MAX1720X_ENABLE             0x1U
 #define MAX1720X_DISABLE            0x0U
+#define MAX1720X_AVG_CURRENT_TIMING 0x07U
 #define MAX1720X_V_EMPTY_HYSTERESIS 500
 
 #define MAX17201_MAX_CELLS      0x01U
@@ -68,6 +69,9 @@ struct max17201_config {
 #elif defined(CONFIG_MAX17201_FG_INPUT_REGISTER)
 #define MAX17201_TEMP_INPUT MAX17201_TEMP_INPUT_REGISTER
 #endif
+
+/* MAX1720X Masks */
+#define MAX1720X_MASK_FILTER_AVG_CURRENT 0x000FU
 
 /* MAX1720X Timings */
 #define MAX1720X_TIMING_POWER_ON_RESET_MS    10
@@ -318,10 +322,11 @@ struct max17201_config {
 #define MAX1720X_COMMAND_SOFTWARE_RESET 0x0001U
 
 /* MAX1720X Units Compute */
+#define MAX1720X_COMPUTE_SIGN(reg)             ((reg & 0x8000) ? reg - (1 << 16) : reg)
 #define MAX1720X_COMPUTE_CAPACITY(reg, rshunt) (reg * 5 / rshunt)
 #define MAX1720X_COMPUTE_PERCENTAGE(reg)       (int)((reg >> 8) / 2.56)
 #define MAX1720X_COMPUTE_VOLTAGE(reg)          (reg / 12.8)
-#define MAX1720X_COMPUTE_CURRENT(reg, rshunt)  ((signed int)(reg)*1.5625 / rshunt)
+#define MAX1720X_COMPUTE_CURRENT(reg, rshunt)  (int)((MAX1720X_COMPUTE_SIGN(reg)) * 1562.5 / rshunt)
 #define MAX1720X_COMPUTE_TEMPERATURE(reg)      (((signed int)(reg)) >> 8)
 #define MAX1720X_COMPUTE_RESISTENCE(reg)       (reg / 4096)
 #define MAX1720X_COMPUTE_TIME(reg)             (int)(reg * 5.625)

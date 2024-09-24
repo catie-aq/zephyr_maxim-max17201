@@ -19,9 +19,8 @@ int main(void)
 	while (1) {
 		// Example for fuel gauge driver
 		union fuel_gauge_prop_val value;
-		uint16_t prop = FUEL_GAUGE_TEMPERATURE;
-		fuel_gauge_get_prop(dev, prop, &value);
-		printk("Temperature: %d\n", value.temperature);
+		fuel_gauge_get_prop(dev, FUEL_GAUGE_AVG_CURRENT, &value);
+		printk("Avg Current: %d\n", value.avg_current);
 
 		k_sleep(K_MSEC(1000));
 	}
