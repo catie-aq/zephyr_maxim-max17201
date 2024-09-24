@@ -52,13 +52,11 @@ struct max17201_config {
 };
 
 /* MAX17201 CONFIGURATION */
-#define MAX1720X_DEVICE_NAME_17201     0x01U
-#define MAX1720X_DEVICE_NAME_17205     0x05U
-#define MAX1720X_ENABLE                0x1U
-#define MAX1720X_DISABLE               0x0U
-#define MAX1720X_V_EMPTY_HYSTERESIS    500
-#define MAX1720X_V_EMPTY_CONVERSION_VE (1 / 10)
-#define MAX1720X_V_EMPTY_CONVERSION_VR (1 / 40)
+#define MAX1720X_DEVICE_NAME_17201  0x01U
+#define MAX1720X_DEVICE_NAME_17205  0x05U
+#define MAX1720X_ENABLE             0x1U
+#define MAX1720X_DISABLE            0x0U
+#define MAX1720X_V_EMPTY_HYSTERESIS 500
 
 #define MAX17201_MAX_CELLS      0x01U
 #define MAX17201_CELL_BALANCING 0x00U
@@ -72,7 +70,8 @@ struct max17201_config {
 #endif
 
 /* MAX1720X Timings */
-#define MAX1720X_TIMING_POWER_ON_RESET_MS 10
+#define MAX1720X_TIMING_POWER_ON_RESET_MS    10
+#define MAX1720X_TIMING_CONFIG_ACKNOLEDGE_MS 100
 
 /* REGISTERS Address Control */
 #define MAX1720X_REGISTER_PAGE_ONE_LOW  0x000U
@@ -316,6 +315,7 @@ struct max17201_config {
 
 /* MAX1720X COMMANDS */
 #define MAX1720X_COMMAND_HARDWARE_RESET 0x000FU
+#define MAX1720X_COMMAND_SOFTWARE_RESET 0x0001U
 
 /* MAX1720X Units Compute */
 #define MAX1720X_COMPUTE_CAPACITY(reg, rshunt) (reg * 5 / rshunt)
@@ -325,6 +325,10 @@ struct max17201_config {
 #define MAX1720X_COMPUTE_TEMPERATURE(reg)      (((signed int)(reg)) >> 8)
 #define MAX1720X_COMPUTE_RESISTENCE(reg)       (reg / 4096)
 #define MAX1720X_COMPUTE_TIME(reg)             (int)(reg * 5.625)
+#define MAX1720X_COMPUTE_CONVERSION_VE(reg)    (reg / 10)
+#define MAX1720X_COMPUTE_CONVERSION_VR(reg)    (reg / 40)
+
+#define MAX1720X_COMPUTE_REG_CAPACITY(reg, rshunt) (reg * rshunt / 5)
 
 /* ZEPHYR Units Compute */
 #define MAX1720X_ZEPHYR_CAPACITY_UAH(val) (uint32_t)(val * 1000) // uAh

@@ -18,7 +18,7 @@ static int max17201_i2c_read(const struct device *dev, uint16_t reg_addr, uint16
 	uint8_t reg[2];
 	int err;
 
-	if (MAX1720X_REGISTER_IS_SBS(reg_addr)) {
+	if (reg_addr & 0x100U) {
 		addr = config->sbs_addr;
 	} else {
 		addr = config->m5_addr;
@@ -44,7 +44,7 @@ static int max17201_i2c_write(const struct device *dev, uint16_t reg_addr, uint1
 	uint8_t reg[2];
 	int err;
 
-	if (MAX1720X_REGISTER_IS_SBS(reg_addr)) {
+	if (reg_addr & 0x100U) {
 		addr = config->sbs_addr;
 	} else {
 		addr = config->m5_addr;
@@ -109,14 +109,47 @@ static int max17201_configure_empty_voltage(const struct device *dev)
 	int err;
 
 	uint16_t value = 0x0000U;
-	value |= ((config->empty_voltage + MAX1720X_V_EMPTY_HYSTERESIS) *
-		  MAX1720X_V_EMPTY_CONVERSION_VR) &
+	value |= (MAX1720X_COMPUTE_CONVERSION_VR(
+			 (config->empty_voltage + MAX1720X_V_EMPTY_HYSTERESIS))) &
 		 0x7FU;
-	value |= (((config->empty_voltage) * MAX1720X_V_EMPTY_CONVERSION_VR) & 0x01FFU) << 7;
-
+	value |= ((MAX1720X_COMPUTE_CONVERSION_VE(config->empty_voltage)) & 0x01FFU) << 7;
 	err = max17201_i2c_write(dev, MAX1720X_REGISTER_N_V_EMPTY, value);
 	if (err < 0) {
 		LOG_ERR("[EV_1] Unable to write nVEmpty, error %d", err);
+		return err;
+	}
+
+	return 0;
+}
+
+static int max17201_configure_design_capacity(const struct device *dev)
+{
+	const struct max17201_config *config = dev->config;
+	int err;
+
+	if ((config->capacity <= 0) ||
+	    (config->capacity > MAX1720X_COMPUTE_CAPACITY(0xFFFFU, config->rshunt))) {
+		LOG_ERR("[ED_1] CAPACITY not valid!");
+		return -EINVAL;
+	}
+
+	err = max17201_i2c_write(dev, MAX1720X_REGISTER_N_DESIGN_CAP,
+				 MAX1720X_COMPUTE_REG_CAPACITY(config->capacity, config->rshunt));
+	if (err < 0) {
+		LOG_ERR("[ED_2] Unable to write nDesignCap, error %d", err);
+		return err;
+	}
+	err = max17201_i2c_write(dev, MAX1720X_REGISTER_N_FULL_CAP_REP,
+				 MAX1720X_COMPUTE_REG_CAPACITY(config->capacity, config->rshunt));
+	if (err < 0) {
+		LOG_ERR("[ED_3] Unable to write nFullCapRep, error %d", err);
+		return err;
+	}
+	err = max17201_i2c_write(
+		dev, MAX1720X_REGISTER_N_FULL_CAP_NOM,
+		MAX1720X_COMPUTE_REG_CAPACITY(config->capacity * 1.1, config->rshunt));
+	if (err < 0) {
+		LOG_ERR("[ED_4] Unable to write nFullCapNom, error %d", err);
 		return err;
 	}
 
@@ -130,6 +163,24 @@ static int max17201_configuration(const struct device *dev)
 	uint16_t config_reg;
 	int err;
 
+	if ((config->nb_cell <= 0x00U) || (config->nb_cell > 0x0FU)) {
+		LOG_ERR("[EC_1] NB CELLS not valid!");
+		return -EINVAL;
+	}
+	if ((data->device_type == MAX1720X_DEVICE_NAME_17201) &&
+	    (config->nb_cell > MAX17201_MAX_CELLS)) {
+		LOG_ERR("[EC_2] NB CELLS not valid!");
+		return -EINVAL;
+	}
+
+	LOG_DBG("Restoring MAX17201 non-volatile memory");
+	err = max17201_i2c_write(dev, MAX1720X_REGISTER_COMMAND, MAX1720X_COMMAND_HARDWARE_RESET);
+	if (err < 0) {
+		LOG_ERR("[EI_3] Unable to write COMMAND, error %d", err);
+		return err;
+	}
+	k_sleep(K_MSEC(MAX1720X_TIMING_POWER_ON_RESET_MS));
+
 	/* nNVCfg 0 configuration */
 	config_reg = (MAX1720X_DISABLE << 15) | (MAX1720X_DISABLE << 14) | (0 << 13) | (0 << 12) |
 		     (MAX1720X_DISABLE << 11) | (MAX1720X_DISABLE << 10) | (MAX1720X_DISABLE << 9) |
@@ -138,7 +189,7 @@ static int max17201_configuration(const struct device *dev)
 		     (MAX1720X_DISABLE << 2) | (MAX1720X_DISABLE << 1) | (MAX1720X_DISABLE << 0);
 	err = max17201_i2c_write(dev, MAX1720X_REGISTER_N_NV_CFG_0, config_reg);
 	if (err < 0) {
-		LOG_ERR("[EC_1] Unable to write nNVCfg_0, error %d", err);
+		LOG_ERR("[EC_4] Unable to write nNVCfg_0, error %d", err);
 		return err;
 	}
 
@@ -150,7 +201,7 @@ static int max17201_configuration(const struct device *dev)
 		     (MAX1720X_ENABLE << 2) | (MAX1720X_ENABLE << 1) | (0 << 0);
 	err = max17201_i2c_write(dev, MAX1720X_REGISTER_N_NV_CFG_1, config_reg);
 	if (err < 0) {
-		LOG_ERR("[EC_2] Unable to write nNVCfg_1, error %d", err);
+		LOG_ERR("[EC_5] Unable to write nNVCfg_1, error %d", err);
 		return err;
 	}
 
@@ -160,10 +211,10 @@ static int max17201_configuration(const struct device *dev)
 	config_reg = (MAX1720X_ENABLE << 15) | (MAX1720X_ENABLE << 14) | (MAX1720X_ENABLE << 13) |
 		     (MAX1720X_ENABLE << 12) | (MAX1720X_ENABLE << 11) | (MAX1720X_ENABLE << 10) |
 		     (MAX1720X_ENABLE << 9) | (MAX1720X_ENABLE << 8) | (MAX1720X_DISABLE << 7) |
-		     ((((cycles << 2) - 1) & 0x7FU) << 0);
+		     ((((cycles << 1) - 1) & 0x7FU) << 0);
 	err = max17201_i2c_write(dev, MAX1720X_REGISTER_N_NV_CFG_2, config_reg);
 	if (err < 0) {
-		LOG_ERR("[EC_3] Unable to write nNVCfg_2, error %d", err);
+		LOG_ERR("[EC_6] Unable to write nNVCfg_2, error %d", err);
 		return err;
 	}
 
@@ -176,18 +227,8 @@ static int max17201_configuration(const struct device *dev)
 		     (MAX1720X_DISABLE << 1) | (MAX1720X_DISABLE << 0);
 	err = max17201_i2c_write(dev, MAX1720X_REGISTER_N_CONFIG, config_reg);
 	if (err < 0) {
-		LOG_ERR("[EC_4] Unable to write nConfig, error %d", err);
+		LOG_ERR("[EC_7] Unable to write nConfig, error %d", err);
 		return err;
-	}
-
-	if ((config->nb_cell <= 0x00U) || (config->nb_cell > 0x0FU)) {
-		LOG_ERR("[EC_5] NB CELLS not valid!");
-		return -EINVAL;
-	}
-	if ((data->device_type == MAX1720X_DEVICE_NAME_17201) &&
-	    (config->nb_cell > MAX17201_MAX_CELLS)) {
-		LOG_ERR("[EC_6] NB CELLS not valid!");
-		return -EINVAL;
 	}
 
 	uint8_t internal_temp = MAX1720X_DISABLE;
@@ -199,26 +240,51 @@ static int max17201_configuration(const struct device *dev)
 	config_reg = (fgt << 15) | (0 << 14) | ((config->ext_thermistor1 ? 0x1U : 0x0U) << 13) |
 		     ((config->ext_thermistor2 ? 0x1U : 0x0U) << 12) | (internal_temp << 11) |
 		     (MAX1720X_ENABLE << 10) | (MAX1720X_DISABLE << 9) | (MAX1720X_DISABLE << 8) |
-		     ((MAX17201_CELL_BALANCING & 0x07U) << 5) | (0 << 4) | (config->nb_cell << 0);
+		     ((MAX17201_CELL_BALANCING & 0x07U) << 5) | (0 << 4) |
+		     (((uint8_t)(config->nb_cell) & 0x0FU) << 0);
 	err = max17201_i2c_write(dev, MAX1720X_REGISTER_N_PACK_CFG, config_reg);
 	if (err < 0) {
-		LOG_ERR("[EC_7] Unable to write nPackCfg, error %d", err);
+		LOG_ERR("[EC_8] Unable to write nPackCfg, error %d", err);
 		return err;
 	}
 
 	// EXT Thermistors configuration
 	err = max17201_configure_thermistor(dev);
 	if (err < 0) {
-		LOG_ERR("[EC_8] Unable to configure thermistors, error %d", err);
+		LOG_ERR("[EC_9] Unable to configure thermistors, error %d", err);
 		return err;
 	}
 
 	// Empty voltage configuration
 	err = max17201_configure_empty_voltage(dev);
 	if (err < 0) {
-		LOG_ERR("[EC_8] Unable to configure thermistors, error %d", err);
+		LOG_ERR("[EC_A] Unable to configure empty voltage, error %d", err);
 		return err;
 	}
+
+	// Design capacity configuration
+	err = max17201_configure_design_capacity(dev);
+	if (err < 0) {
+		LOG_ERR("[EC_B] Unable to configure design capacity, error %d", err);
+		return err;
+	}
+
+	// Restart Firmeware
+	err = max17201_i2c_write(dev, MAX1720X_REGISTER_CONFIG_2, MAX1720X_COMMAND_SOFTWARE_RESET);
+	if (err < 0) {
+		LOG_ERR("[EC_C] Unable to write COMMAND, error %d", err);
+		return err;
+	}
+	k_sleep(K_MSEC(MAX1720X_TIMING_POWER_ON_RESET_MS));
+
+	/* PackCfg configuration */
+	err = max17201_i2c_write(dev, MAX1720X_REGISTER_N_PACK_CFG, config_reg);
+	if (err < 0) {
+		LOG_ERR("[EC_D] Unable to write nPackCfg, error %d", err);
+		return err;
+	}
+
+	k_sleep(K_MSEC(MAX1720X_TIMING_CONFIG_ACKNOLEDGE_MS));
 
 	return 0;
 }
@@ -234,11 +300,11 @@ static int max17201_init(const struct device *dev)
 		return -ENODEV;
 	}
 
-	LOG_INF("M5 ADDR: [0x%02X]", config->m5_addr);
-	LOG_INF("SB ADDR: [0x%02X]", config->sbs_addr);
+	LOG_INF("CONF: M5 ADDR: [0x%02X]", config->m5_addr);
+	LOG_INF("CONF: SB ADDR: [0x%02X]", config->sbs_addr);
 
 	uint16_t reg;
-	err = max17201_i2c_read(dev, 0x21, &reg);
+	err = max17201_i2c_read(dev, MAX1720X_REGISTER_DEV_NAME, &reg);
 	if (err < 0) {
 		LOG_ERR("[EI_2] Unable to read MAX_ID, error %d", err);
 		return err;
@@ -250,27 +316,28 @@ static int max17201_init(const struct device *dev)
 	}
 
 	if ((reg & 0x0F) == MAX1720X_DEVICE_NAME_17201) {
-		LOG_INF("DEVICE: [MAX17201]");
+		LOG_INF("CONF: DEVICE: [MAX17201]");
 		data->device_type = MAX1720X_DEVICE_NAME_17201;
 	} else if ((reg & 0x0F) == MAX1720X_DEVICE_NAME_17205) {
-		LOG_INF("DEVICE: [MAX17205]");
+		LOG_INF("CONF: DEVICE: [MAX17205]");
 		data->device_type = MAX1720X_DEVICE_NAME_17205;
 	} else {
 		LOG_ERR("[EI_4] DEVICE: [UKNOWN]");
+		return -ENODEV;
 	}
-	LOG_INF("REVISION: [%d]", reg >> 4);
-	LOG_INF("CELLS NB: [%d]", config->nb_cell);
-	LOG_INF("R SHUNT: [%d mOhms]", config->rshunt);
-	LOG_INF("CAPACITY: [%d mAh]", config->capacity);
-	LOG_INF("EMPTY VOLTAGE: [%d mV]", config->empty_voltage);
-	LOG_INF("EXT THERMISTOR: [%s][%s]", config->ext_thermistor1 ? "x" : " ",
+	LOG_INF("CONF: REVISION: [%d]", reg >> 4);
+	LOG_INF("CONF: CELLS NB: [%d]", config->nb_cell);
+	LOG_INF("CONF: R SHUNT: [%d mOhms]", config->rshunt);
+	LOG_INF("CONF: CAPACITY: [%d mAh]", config->capacity);
+	LOG_INF("CONF: EMPTY VOLTAGE: [%d mV]", config->empty_voltage);
+	LOG_INF("CONF: EXT THERMISTOR: [%s][%s]", config->ext_thermistor1 ? "x" : " ",
 		config->ext_thermistor2 ? "x" : " ");
-	LOG_INF("NTC THERMISTOR: [%d idx]", config->ntc_thermistors);
+	LOG_INF("CONF: NTC THERMISTOR: [%d idx]", config->ntc_thermistors);
 	char internal_temp = ' ';
 #if defined(CONFIG_MAX17201_INTERNAL_TEMP)
 	internal_temp = 'x';
 #endif
-	LOG_INF("INTERNAL TEMP: [%c]", internal_temp);
+	LOG_INF("CONF: INTERNAL TEMP: [%c]", internal_temp);
 
 	err = max17201_i2c_read(dev, MAX1720X_REGISTER_DESIGN_CAP, &reg);
 	if (err < 0) {
@@ -280,19 +347,10 @@ static int max17201_init(const struct device *dev)
 
 	/* 750 mAh capacity is default -> MAX17201 need configuration */
 	if (MAX1720X_COMPUTE_ZEPHYR_CAPACITY_MAH(reg, config->rshunt) == 750) {
-		LOG_INF("MAX17201 Configuration...");
-		LOG_DBG("Restoring MAX17201 non-volatile memory");
-		err = max17201_i2c_write(dev, MAX1720X_REGISTER_COMMAND,
-					 MAX1720X_COMMAND_HARDWARE_RESET);
-		if (err < 0) {
-			LOG_ERR("[EI_6] Unable to write COMMAND, error %d", err);
-			return err;
-		}
-		k_sleep(K_MSEC(MAX1720X_TIMING_POWER_ON_RESET_MS));
-
+		LOG_WRN("MAX17201 Configuration...");
 		err = max17201_configuration(dev);
 		if (err < 0) {
-			LOG_ERR("[EI_7] Unable to configure DEVICE, error %d", err);
+			LOG_ERR("[EI_6] Unable to configure DEVICE, error %d", err);
 			return err;
 		}
 	}
