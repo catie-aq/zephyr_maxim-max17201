@@ -16,7 +16,7 @@ Based on [MAX17201 Datasheet](https://www.mouser.fr/datasheet/2/609/MAX17201_MAX
 - [ ] Prop : State of Charge
 - [ ] Prop : Current
 - [ ] Prop : Min Current
-- [ ] Prop : Avg Current
+- [X] Prop : Avg Current
 - [ ] Prop : Max Current
 - [ ] Prop : Cell Voltage
 - [ ] Prop : Min Cell Voltage
