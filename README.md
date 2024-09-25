@@ -37,4 +37,5 @@ Based on [MAX17201 Datasheet](https://www.mouser.fr/datasheet/2/609/MAX17201_MAX
 - [X] Prop : Cycle Count
 - [ ] Prop : Remaining NVM writes
 - [X] Prop : Alert Flags
+- [X] Prop : Status
 - [X] Get Prop API
