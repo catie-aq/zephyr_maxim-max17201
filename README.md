@@ -22,8 +22,8 @@ Based on [MAX17201 Datasheet](https://www.mouser.fr/datasheet/2/609/MAX17201_MAX
 - [ ] Prop : Min Cell Voltage
 - [ ] Prop : Avg Cell Voltage
 - [ ] Prop : Max Cell Voltage
-- [ ] Prop : Time to Full
-- [ ] Prop : Time to Empty
+- [X] Prop : Time to Full
+- [X] Prop : Time to Empty
 - [ ] Prop : Battery Present
 - [X] Prop : Reported Capacity
 - [X] Prop : Full Capacity
