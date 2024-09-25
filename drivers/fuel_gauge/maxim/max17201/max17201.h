@@ -346,6 +346,7 @@ struct max17201_config {
 #define MAX1720X_ZEPHYR_CYCLES(val)       (uint32_t)(val)        // 1/100th
 #define MAX1720X_ZEPHYR_CAPACITY_UAH(val) (uint32_t)(val * 1000) // uAh
 #define MAX1720X_ZEPHYR_CAPACITY_MAH(val) (uint16_t)(val)        // mAh
+#define MAX1720X_ZEPHYR_TIME_MIN(val)     (uint32_t)(val / 60)   // minutes
 
 #define MAX1720X_COMPUTE_ZEPHYR_CURRENT_MA(reg, rshunt)                                            \
 	(MAX1720X_ZEPHYR_CURRENT_MA(MAX1720X_COMPUTE_CURRENT(reg, rshunt))) // mA
@@ -355,6 +356,8 @@ struct max17201_config {
 	(MAX1720X_ZEPHYR_CAPACITY_UAH(MAX1720X_COMPUTE_CAPACITY(reg, rshunt)))
 #define MAX1720X_COMPUTE_ZEPHYR_CAPACITY_MAH(reg, rshunt)                                          \
 	(MAX1720X_ZEPHYR_CAPACITY_MAH(MAX1720X_COMPUTE_CAPACITY(reg, rshunt)))
+#define MAX1720X_COMPUTE_ZEPHYR_TIME_MIN(reg)                                                      \
+	(MAX1720X_ZEPHYR_TIME_MIN(MAX1720X_COMPUTE_TIME(reg))) // minutes
 
 struct max17201_data {
 	uint8_t device_type;

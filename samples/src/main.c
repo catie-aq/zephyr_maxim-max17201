@@ -51,6 +51,16 @@ int main(void)
 			return err;
 		}
 		printk("Remaining Cap: %d\n", value.remaining_capacity);
+		err = fuel_gauge_get_prop(dev, FUEL_GAUGE_RUNTIME_TO_EMPTY, &value);
+		if (err < 0) {
+			return err;
+		}
+		printk("TTE: %d\n", value.runtime_to_empty);
+		err = fuel_gauge_get_prop(dev, FUEL_GAUGE_RUNTIME_TO_FULL, &value);
+		if (err < 0) {
+			return err;
+		}
+		printk("TTF: %d\n", value.runtime_to_full);
 
 		k_sleep(K_MSEC(1000));
 	}

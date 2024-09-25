@@ -151,6 +151,26 @@ static int max17201_get_property(const struct device *dev, fuel_gauge_prop_t pro
 		val->remaining_capacity = MAX1720X_COMPUTE_ZEPHYR_CAPACITY_UAH(reg, config->rshunt);
 		break;
 
+	case FUEL_GAUGE_RUNTIME_TO_EMPTY:
+		val->runtime_to_empty = 0;
+		err = max17201_i2c_read(dev, MAX1720X_REGISTER_TTE, &reg);
+		if (err < 0) {
+			LOG_ERR("[EP_7] Unable to read TTE, error %d", err);
+			return err;
+		}
+		val->runtime_to_empty = MAX1720X_COMPUTE_ZEPHYR_TIME_MIN(reg);
+		break;
+
+	case FUEL_GAUGE_RUNTIME_TO_FULL:
+		val->runtime_to_full = 0;
+		err = max17201_i2c_read(dev, MAX1720X_REGISTER_TTF, &reg);
+		if (err < 0) {
+			LOG_ERR("[EP_8] Unable to read TTF, error %d", err);
+			return err;
+		}
+		val->runtime_to_full = MAX1720X_COMPUTE_ZEPHYR_TIME_MIN(reg);
+		break;
+
 	default:
 		LOG_ERR("[EP_X] UNSUPPORTED property!!");
 		return -ENOTSUP;
