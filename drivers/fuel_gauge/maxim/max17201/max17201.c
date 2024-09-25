@@ -171,6 +171,32 @@ static int max17201_get_property(const struct device *dev, fuel_gauge_prop_t pro
 		val->runtime_to_full = MAX1720X_COMPUTE_ZEPHYR_TIME_MIN(reg);
 		break;
 
+	case FUEL_GAUGE_ABSOLUTE_STATE_OF_CHARGE:
+		val->absolute_state_of_charge = 0;
+		uint16_t temp[2];
+		err = max17201_i2c_read(dev, MAX1720X_REGISTER_DESIGN_CAP, &temp[0]);
+		if (err < 0) {
+			LOG_ERR("[EP_8] Unable to read DesignCap, error %d", err);
+			return err;
+		}
+		err = max17201_i2c_read(dev, MAX1720X_REGISTER_REP_CAP, &temp[1]);
+		if (err < 0) {
+			LOG_ERR("[EP_8] Unable to read RepCap, error %d", err);
+			return err;
+		}
+		val->absolute_state_of_charge = (uint8_t)((100 * temp[1]) / temp[0]);
+		break;
+
+	case FUEL_GAUGE_RELATIVE_STATE_OF_CHARGE:
+		val->relative_state_of_charge = 0;
+		err = max17201_i2c_read(dev, MAX1720X_REGISTER_REP_SOC, &reg);
+		if (err < 0) {
+			LOG_ERR("[EP_8] Unable to read RepSOC, error %d", err);
+			return err;
+		}
+		val->relative_state_of_charge = MAX1720X_COMPUTE_PERCENTAGE(reg);
+		break;
+
 	default:
 		LOG_ERR("[EP_X] UNSUPPORTED property!!");
 		return -ENOTSUP;

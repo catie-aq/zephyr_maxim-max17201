@@ -61,6 +61,16 @@ int main(void)
 			return err;
 		}
 		printk("TTF: %d\n", value.runtime_to_full);
+		err = fuel_gauge_get_prop(dev, FUEL_GAUGE_ABSOLUTE_STATE_OF_CHARGE, &value);
+		if (err < 0) {
+			return err;
+		}
+		printk("Abs SOC: %d%%\n", value.absolute_state_of_charge);
+		err = fuel_gauge_get_prop(dev, FUEL_GAUGE_RELATIVE_STATE_OF_CHARGE, &value);
+		if (err < 0) {
+			return err;
+		}
+		printk("Rel SOC: %d%%\n", value.relative_state_of_charge);
 
 		k_sleep(K_MSEC(1000));
 	}

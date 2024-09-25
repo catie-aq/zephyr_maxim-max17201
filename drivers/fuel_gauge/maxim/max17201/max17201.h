@@ -328,7 +328,7 @@ struct max17201_config {
 #define MAX1720X_COMPUTE_SIGN(reg) ((reg & 0x8000) ? reg - (1 << 16) : reg)
 
 #define MAX1720X_COMPUTE_CAPACITY(reg, rshunt) (reg * 5 / rshunt)
-#define MAX1720X_COMPUTE_PERCENTAGE(reg)       (int)((reg >> 8) / 2.56)
+#define MAX1720X_COMPUTE_PERCENTAGE(reg)       (int)(reg >> 8)
 #define MAX1720X_COMPUTE_VOLTAGE(reg)          (reg / 12.8)
 #define MAX1720X_COMPUTE_CURRENT(reg, rshunt)  ((MAX1720X_COMPUTE_SIGN(reg)) * 1562.5 / rshunt)
 #define MAX1720X_COMPUTE_TEMPERATURE(reg)      (((signed int)(reg)) >> 8)
