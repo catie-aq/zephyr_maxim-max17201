@@ -429,35 +429,35 @@ static int max17201_configuration(const struct device *dev)
 		return err;
 	}
 
-	// EXT Thermistors configuration
+	/* EXT Thermistors configuration */
 	err = max17201_configure_thermistor(dev);
 	if (err < 0) {
 		LOG_ERR("[EC_9] Unable to configure thermistors, error %d", err);
 		return err;
 	}
 
-	// Empty voltage configuration
+	/* Empty voltage configuration */
 	err = max17201_configure_empty_voltage(dev);
 	if (err < 0) {
 		LOG_ERR("[EC_A] Unable to configure empty voltage, error %d", err);
 		return err;
 	}
 
-	// Design capacity configuration
+	/* Design capacity configuration */
 	err = max17201_configure_design_capacity(dev);
 	if (err < 0) {
 		LOG_ERR("[EC_B] Unable to configure design capacity, error %d", err);
 		return err;
 	}
 
-	// Filter timing configuration
+	/* Filter timing configuration */
 	err = max17201_configure_avg_time(dev);
 	if (err < 0) {
 		LOG_ERR("[EC_C] Unable to configure design capacity, error %d", err);
 		return err;
 	}
 
-	// Restart Firmeware
+	/* Restart Firmeware */
 	err = max17201_i2c_write(dev, MAX1720X_REGISTER_CONFIG_2, MAX1720X_COMMAND_SOFTWARE_RESET);
 	if (err < 0) {
 		LOG_ERR("[EC_D] Unable to write COMMAND, error %d", err);

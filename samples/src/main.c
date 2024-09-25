@@ -18,7 +18,7 @@ int main(void)
 	}
 
 	while (1) {
-		// Example for fuel gauge driver
+		/* Example for fuel gauge driver */
 		printk("----------------\n");
 		union fuel_gauge_prop_val value;
 		err = fuel_gauge_get_prop(dev, FUEL_GAUGE_AVG_CURRENT, &value);
