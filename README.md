@@ -19,7 +19,7 @@ Based on [MAX17201 Datasheet](https://www.mouser.fr/datasheet/2/609/MAX17201_MAX
 - [ ] Prop : Min Current
 - [X] Prop : Avg Current
 - [ ] Prop : Max Current
-- [ ] Prop : Cell Voltage
+- [X] Prop : Cell Voltage
 - [ ] Prop : Min Cell Voltage
 - [ ] Prop : Avg Cell Voltage
 - [ ] Prop : Max Cell Voltage
