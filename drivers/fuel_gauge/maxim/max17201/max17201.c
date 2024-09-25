@@ -79,7 +79,6 @@ static int max17201_get_property(const struct device *dev, fuel_gauge_prop_t pro
 
 	switch (prop) {
 	case FUEL_GAUGE_AVG_CURRENT:
-		val->avg_current = 0;
 		err = max17201_i2c_read(dev, MAX1720X_REGISTER_AVG_CURRENT, &reg);
 		if (err < 0) {
 			LOG_ERR("[EP_1] Unable to read AvgCurrent, error %d", err);
@@ -99,7 +98,6 @@ static int max17201_get_property(const struct device *dev, fuel_gauge_prop_t pro
 		break;
 
 	case FUEL_GAUGE_CYCLE_COUNT:
-		val->cycle_count = 0;
 		err = max17201_i2c_read(dev, MAX1720X_REGISTER_CYCLES, &reg);
 		if (err < 0) {
 			LOG_ERR("[EP_3] Unable to read Cycles, error %d", err);
@@ -131,7 +129,6 @@ static int max17201_get_property(const struct device *dev, fuel_gauge_prop_t pro
 		break;
 
 	case FUEL_GAUGE_FULL_CHARGE_CAPACITY:
-		val->full_charge_capacity = 0;
 		err = max17201_i2c_read(dev, MAX1720X_REGISTER_FULL_CAP_REP, &reg);
 		if (err < 0) {
 			LOG_ERR("[EP_5] Unable to read FullCapRep, error %d", err);
@@ -142,7 +139,6 @@ static int max17201_get_property(const struct device *dev, fuel_gauge_prop_t pro
 		break;
 
 	case FUEL_GAUGE_REMAINING_CAPACITY:
-		val->remaining_capacity = 0;
 		err = max17201_i2c_read(dev, MAX1720X_REGISTER_REP_CAP, &reg);
 		if (err < 0) {
 			LOG_ERR("[EP_6] Unable to read RepCap, error %d", err);
@@ -152,7 +148,6 @@ static int max17201_get_property(const struct device *dev, fuel_gauge_prop_t pro
 		break;
 
 	case FUEL_GAUGE_RUNTIME_TO_EMPTY:
-		val->runtime_to_empty = 0;
 		err = max17201_i2c_read(dev, MAX1720X_REGISTER_TTE, &reg);
 		if (err < 0) {
 			LOG_ERR("[EP_7] Unable to read TTE, error %d", err);
@@ -172,7 +167,6 @@ static int max17201_get_property(const struct device *dev, fuel_gauge_prop_t pro
 		break;
 
 	case FUEL_GAUGE_ABSOLUTE_STATE_OF_CHARGE:
-		val->absolute_state_of_charge = 0;
 		uint16_t temp[2];
 		err = max17201_i2c_read(dev, MAX1720X_REGISTER_DESIGN_CAP, &temp[0]);
 		if (err < 0) {
@@ -188,7 +182,6 @@ static int max17201_get_property(const struct device *dev, fuel_gauge_prop_t pro
 		break;
 
 	case FUEL_GAUGE_RELATIVE_STATE_OF_CHARGE:
-		val->relative_state_of_charge = 0;
 		err = max17201_i2c_read(dev, MAX1720X_REGISTER_REP_SOC, &reg);
 		if (err < 0) {
 			LOG_ERR("[EP_A] Unable to read RepSOC, error %d", err);
@@ -198,7 +191,6 @@ static int max17201_get_property(const struct device *dev, fuel_gauge_prop_t pro
 		break;
 
 	case FUEL_GAUGE_TEMPERATURE:
-		val->temperature = 0;
 		err = max17201_i2c_read(dev, MAX1720X_REGISTER_TEMP, &reg);
 		if (err < 0) {
 			LOG_ERR("[EP_B] Unable to read Temp, error %d", err);
@@ -208,7 +200,6 @@ static int max17201_get_property(const struct device *dev, fuel_gauge_prop_t pro
 		break;
 
 	case FUEL_GAUGE_VOLTAGE:
-		val->voltage = 0;
 		err = max17201_i2c_read(dev, MAX1720X_REGISTER_V_CELL, &reg);
 		if (err < 0) {
 			LOG_ERR("[EP_C] Unable to read VCell, error %d", err);
@@ -225,6 +216,15 @@ static int max17201_get_property(const struct device *dev, fuel_gauge_prop_t pro
 			return err;
 		}
 		val->fg_status |= (reg & MAX1720X_MASK_STATUS);
+		break;
+
+	case FUEL_GAUGE_DESIGN_CAPACITY:
+		err = max17201_i2c_read(dev, MAX1720X_REGISTER_DESIGN_CAP, &reg);
+		if (err < 0) {
+			LOG_ERR("[EP_E] Unable to read DesignCap, error %d", err);
+			return err;
+		}
+		val->design_cap = MAX1720X_COMPUTE_ZEPHYR_CAPACITY_MAH(reg, config->rshunt);
 		break;
 
 	default:

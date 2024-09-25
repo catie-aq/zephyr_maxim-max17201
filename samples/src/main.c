@@ -86,6 +86,11 @@ int main(void)
 			return err;
 		}
 		printk("STATUS: 0x%04X\n", value.fg_status);
+		err = fuel_gauge_get_prop(dev, FUEL_GAUGE_DESIGN_CAPACITY, &value);
+		if (err < 0) {
+			return err;
+		}
+		printk("DesignCap: %d mAh\n", value.design_cap);
 
 		k_sleep(K_MSEC(1000));
 	}
