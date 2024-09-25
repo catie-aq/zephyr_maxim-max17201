@@ -337,7 +337,7 @@ struct max17201_config {
 #define MAX1720X_COMPUTE_CONVERSION_VE(reg)    (reg / 10)
 #define MAX1720X_COMPUTE_CONVERSION_VR(reg)    (reg / 40)
 
-#define MAX1720X_COMPUTE_CYCLES(reg) (100 * reg / 16)
+#define MAX1720X_COMPUTE_CYCLES(reg) (reg * 16)
 
 #define MAX1720X_COMPUTE_REG_CAPACITY(reg, rshunt) (reg * rshunt / 5)
 
