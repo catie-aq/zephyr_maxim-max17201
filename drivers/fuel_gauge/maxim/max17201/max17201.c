@@ -130,6 +130,17 @@ static int max17201_get_property(const struct device *dev, fuel_gauge_prop_t pro
 		val->flags |= ((reg & MAX1720X_MASK_STATUS_2) << (16 + 2));
 		break;
 
+	case FUEL_GAUGE_FULL_CHARGE_CAPACITY:
+		val->full_charge_capacity = 0;
+		err = max17201_i2c_read(dev, MAX1720X_REGISTER_FULL_CAP_REP, &reg);
+		if (err < 0) {
+			LOG_ERR("[EP_3] Unable to read Cycles, error %d", err);
+			return err;
+		}
+		val->full_charge_capacity =
+			MAX1720X_COMPUTE_ZEPHYR_CAPACITY_UAH(reg, config->rshunt);
+		break;
+
 	default:
 		LOG_ERR("[EP_X] UNSUPPORTED property!!");
 		return -ENOTSUP;

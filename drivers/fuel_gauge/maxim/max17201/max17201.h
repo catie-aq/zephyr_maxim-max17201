@@ -350,7 +350,7 @@ struct max17201_config {
 #define MAX1720X_COMPUTE_ZEPHYR_CURRENT_MA(reg, rshunt)                                            \
 	(MAX1720X_ZEPHYR_CURRENT_MA(MAX1720X_COMPUTE_CURRENT(reg, rshunt))) // mA
 #define MAX1720X_COMPUTE_ZEPHYR_CYCLES(reg)                                                        \
-	(MAX1720X_ZEPHYR_CYCLES(MAX1720X_COMPUTE_CYCLES(reg))) // mA
+	(MAX1720X_ZEPHYR_CYCLES(MAX1720X_COMPUTE_CYCLES(reg))) // 1/100th
 #define MAX1720X_COMPUTE_ZEPHYR_CAPACITY_UAH(reg, rshunt)                                          \
 	(MAX1720X_ZEPHYR_CAPACITY_UAH(MAX1720X_COMPUTE_CAPACITY(reg, rshunt)))
 #define MAX1720X_COMPUTE_ZEPHYR_CAPACITY_MAH(reg, rshunt)                                          \
