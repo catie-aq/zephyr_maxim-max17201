@@ -194,7 +194,7 @@ static int max17201_get_property(const struct device *dev, fuel_gauge_prop_t pro
 			LOG_ERR("[EP_8] Unable to read RepSOC, error %d", err);
 			return err;
 		}
-		val->relative_state_of_charge = MAX1720X_COMPUTE_PERCENTAGE(reg);
+		val->relative_state_of_charge = MAX1720X_COMPUTE_ZEPHYR_PERCENTAGE(reg);
 		break;
 
 	default:

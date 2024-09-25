@@ -13,7 +13,8 @@ Based on [MAX17201 Datasheet](https://www.mouser.fr/datasheet/2/609/MAX17201_MAX
 - [X] Check design Capacity to init configuration or not
 - [ ] Alert interrupts
 - [X] Set Prop API
-- [ ] Prop : State of Charge
+- [X] Prop : State of Charge
+- [X] Prop : Asb State of Charge
 - [X] Prop : Current
 - [ ] Prop : Min Current
 - [X] Prop : Avg Current
