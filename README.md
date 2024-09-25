@@ -11,7 +11,7 @@ Based on [MAX17201 Datasheet](https://www.mouser.fr/datasheet/2/609/MAX17201_MAX
 - [X] Configure External thermistor
 - [X] Configure Empty Voltage
 - [X] Check design Capacity to init configuration or not
-- [ ] Alert interrupt
+- [ ] Alert interrupts
 - [X] Set Prop API
 - [ ] Prop : State of Charge
 - [X] Prop : Current
@@ -32,7 +32,7 @@ Based on [MAX17201 Datasheet](https://www.mouser.fr/datasheet/2/609/MAX17201_MAX
 - [ ] Prop : Avg Temperature
 - [ ] Prop : Max Temperature
 - [ ] Prop : Age
-- [ ] Prop : Cycle Count
+- [X] Prop : Cycle Count
 - [ ] Prop : Remaining NVM writes
 - [ ] Prop : Alert Flags
 - [X] Get Prop API
