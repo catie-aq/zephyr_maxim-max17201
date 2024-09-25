@@ -30,6 +30,11 @@ int main(void)
 			return err;
 		}
 		printk("Current: %d\n", value.current);
+		err = fuel_gauge_get_prop(dev, FUEL_GAUGE_CYCLE_COUNT, &value);
+		if (err < 0) {
+			return err;
+		}
+		printk("Cycles: %d\n", value.cycle_count);
 
 		k_sleep(K_MSEC(1000));
 	}
