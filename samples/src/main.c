@@ -76,6 +76,11 @@ int main(void)
 			return err;
 		}
 		printk("Temp: %d 0.1K\n", value.temperature);
+		err = fuel_gauge_get_prop(dev, FUEL_GAUGE_VOLTAGE, &value);
+		if (err < 0) {
+			return err;
+		}
+		printk("Voltage: %d uV\n", value.voltage);
 
 		k_sleep(K_MSEC(1000));
 	}

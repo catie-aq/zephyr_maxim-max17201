@@ -329,7 +329,7 @@ struct max17201_config {
 
 #define MAX1720X_COMPUTE_CAPACITY(reg, rshunt) (reg * 5 / rshunt)
 #define MAX1720X_COMPUTE_PERCENTAGE(reg)       (int)(reg >> 8)
-#define MAX1720X_COMPUTE_VOLTAGE(reg)          (reg / 12.8)
+#define MAX1720X_COMPUTE_VOLTAGE(reg)          (reg * 78.125)
 #define MAX1720X_COMPUTE_CURRENT(reg, rshunt)  ((MAX1720X_COMPUTE_SIGN(reg)) * 1562.5 / rshunt)
 #define MAX1720X_COMPUTE_TEMPERATURE(reg)      ((MAX1720X_COMPUTE_SIGN(reg)) >> 8)
 #define MAX1720X_COMPUTE_RESISTENCE(reg)       (reg / 4096)
@@ -349,6 +349,7 @@ struct max17201_config {
 #define MAX1720X_ZEPHYR_TIME_MIN(val)      (uint32_t)(val / 60)   // minutes
 #define MAX1720X_ZEPHYR_PERCENTAGE(val)    (uint8_t)(val)
 #define MAX1720X_ZEPHYR_TEMPERATURE_K(val) (uint16_t)((val + 273.15) * 10) // 0.1K
+#define MAX1720X_ZEPHYR_VOLTAGE_UV(val)    (int)(val)                      // uV
 
 #define MAX1720X_COMPUTE_ZEPHYR_CURRENT_MA(reg, rshunt)                                            \
 	(MAX1720X_ZEPHYR_CURRENT_MA(MAX1720X_COMPUTE_CURRENT(reg, rshunt))) // mA
@@ -364,6 +365,8 @@ struct max17201_config {
 	(MAX1720X_ZEPHYR_PERCENTAGE(MAX1720X_COMPUTE_PERCENTAGE(reg)))
 #define MAX1720X_COMPUTE_ZEPHYR_TEMPERATURE_K(reg)                                                 \
 	(MAX1720X_ZEPHYR_TEMPERATURE_K(MAX1720X_COMPUTE_TEMPERATURE(reg))) // 0.1K
+#define MAX1720X_COMPUTE_ZEPHYR_VOLTAGE_UV(reg)                                                    \
+	(MAX1720X_ZEPHYR_VOLTAGE_UV(MAX1720X_COMPUTE_VOLTAGE(reg))) // uV
 
 struct max17201_data {
 	uint8_t device_type;
