@@ -19,6 +19,7 @@ int main(void)
 
 	while (1) {
 		// Example for fuel gauge driver
+		printk("----------------\n");
 		union fuel_gauge_prop_val value;
 		err = fuel_gauge_get_prop(dev, FUEL_GAUGE_AVG_CURRENT, &value);
 		if (err < 0) {
@@ -45,6 +46,11 @@ int main(void)
 			return err;
 		}
 		printk("Full Charge Cap: %d\n", value.full_charge_capacity);
+		err = fuel_gauge_get_prop(dev, FUEL_GAUGE_REMAINING_CAPACITY, &value);
+		if (err < 0) {
+			return err;
+		}
+		printk("Remaining Cap: %d\n", value.remaining_capacity);
 
 		k_sleep(K_MSEC(1000));
 	}

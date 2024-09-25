@@ -134,11 +134,21 @@ static int max17201_get_property(const struct device *dev, fuel_gauge_prop_t pro
 		val->full_charge_capacity = 0;
 		err = max17201_i2c_read(dev, MAX1720X_REGISTER_FULL_CAP_REP, &reg);
 		if (err < 0) {
-			LOG_ERR("[EP_3] Unable to read Cycles, error %d", err);
+			LOG_ERR("[EP_5] Unable to read FullCapRep, error %d", err);
 			return err;
 		}
 		val->full_charge_capacity =
 			MAX1720X_COMPUTE_ZEPHYR_CAPACITY_UAH(reg, config->rshunt);
+		break;
+
+	case FUEL_GAUGE_REMAINING_CAPACITY:
+		val->remaining_capacity = 0;
+		err = max17201_i2c_read(dev, MAX1720X_REGISTER_REP_CAP, &reg);
+		if (err < 0) {
+			LOG_ERR("[EP_6] Unable to read RepCap, error %d", err);
+			return err;
+		}
+		val->remaining_capacity = MAX1720X_COMPUTE_ZEPHYR_CAPACITY_UAH(reg, config->rshunt);
 		break;
 
 	default:
