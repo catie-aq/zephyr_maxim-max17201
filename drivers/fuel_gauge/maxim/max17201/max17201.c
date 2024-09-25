@@ -79,6 +79,7 @@ static int max17201_get_property(const struct device *dev, fuel_gauge_prop_t pro
 
 	switch (prop) {
 	case FUEL_GAUGE_AVG_CURRENT:
+		val->avg_current = 0;
 		err = max17201_i2c_read(dev, MAX1720X_REGISTER_AVG_CURRENT, &reg);
 		if (err < 0) {
 			LOG_ERR("[EP_1] Unable to read AvgCurrent, error %d", err);
@@ -88,21 +89,45 @@ static int max17201_get_property(const struct device *dev, fuel_gauge_prop_t pro
 		break;
 
 	case FUEL_GAUGE_CURRENT:
+		val->current = 0;
 		err = max17201_i2c_read(dev, MAX1720X_REGISTER_CURRENT, &reg);
 		if (err < 0) {
 			LOG_ERR("[EP_2] Unable to read Current, error %d", err);
 			return err;
 		}
-		val->avg_current = MAX1720X_COMPUTE_ZEPHYR_CURRENT_MA(reg, config->rshunt);
+		val->current = MAX1720X_COMPUTE_ZEPHYR_CURRENT_MA(reg, config->rshunt);
 		break;
 
 	case FUEL_GAUGE_CYCLE_COUNT:
+		val->cycle_count = 0;
 		err = max17201_i2c_read(dev, MAX1720X_REGISTER_CYCLES, &reg);
 		if (err < 0) {
 			LOG_ERR("[EP_3] Unable to read Cycles, error %d", err);
 			return err;
 		}
 		val->cycle_count = MAX1720X_COMPUTE_ZEPHYR_CYCLES(reg);
+		break;
+
+	case FUEL_GAUGE_FLAGS:
+		val->flags = 0;
+		err = max17201_i2c_read(dev, MAX1720X_REGISTER_STATUS, &reg);
+		if (err < 0) {
+			LOG_ERR("[EP_4] Unable to read Status, error %d", err);
+			return err;
+		}
+		val->flags |= (reg & MAX1720X_MASK_STATUS);
+		err = max17201_i2c_read(dev, MAX1720X_REGISTER_F_STAT, &reg);
+		if (err < 0) {
+			LOG_ERR("[EP_4] Unable to read FStatus, error %d", err);
+			return err;
+		}
+		val->flags |= ((reg & MAX1720X_MASK_FUEL_STATUS) << 16);
+		err = max17201_i2c_read(dev, MAX1720X_REGISTER_STATUS_2, &reg);
+		if (err < 0) {
+			LOG_ERR("[EP_4] Unable to read Status_2, error %d", err);
+			return err;
+		}
+		val->flags |= ((reg & MAX1720X_MASK_STATUS_2) << (16 + 2));
 		break;
 
 	default:

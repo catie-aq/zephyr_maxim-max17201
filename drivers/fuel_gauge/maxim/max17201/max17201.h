@@ -72,6 +72,9 @@ struct max17201_config {
 
 /* MAX1720X Masks */
 #define MAX1720X_MASK_FILTER_AVG_CURRENT 0x000FU
+#define MAX1720X_MASK_STATUS             0xFFCEU
+#define MAX1720X_MASK_STATUS_2           0x0003U
+#define MAX1720X_MASK_FUEL_STATUS        0x03C1U
 
 /* MAX1720X Timings */
 #define MAX1720X_TIMING_POWER_ON_RESET_MS    10

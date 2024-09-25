@@ -35,6 +35,11 @@ int main(void)
 			return err;
 		}
 		printk("Cycles: %d\n", value.cycle_count);
+		err = fuel_gauge_get_prop(dev, FUEL_GAUGE_FLAGS, &value);
+		if (err < 0) {
+			return err;
+		}
+		printk("FLAGS: 0x%08X\n", value.flags);
 
 		k_sleep(K_MSEC(1000));
 	}
