@@ -34,5 +34,5 @@ Based on [MAX17201 Datasheet](https://www.mouser.fr/datasheet/2/609/MAX17201_MAX
 - [ ] Prop : Age
 - [X] Prop : Cycle Count
 - [ ] Prop : Remaining NVM writes
-- [ ] Prop : Alert Flags
+- [X] Prop : Alert Flags
 - [X] Get Prop API
