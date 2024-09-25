@@ -45,22 +45,22 @@ int main(void)
 		if (err < 0) {
 			return err;
 		}
-		printk("Full Charge Cap: %d\n", value.full_charge_capacity);
+		printk("Full Charge Cap: %d uAh\n", value.full_charge_capacity);
 		err = fuel_gauge_get_prop(dev, FUEL_GAUGE_REMAINING_CAPACITY, &value);
 		if (err < 0) {
 			return err;
 		}
-		printk("Remaining Cap: %d\n", value.remaining_capacity);
+		printk("Remaining Cap: %d uAh\n", value.remaining_capacity);
 		err = fuel_gauge_get_prop(dev, FUEL_GAUGE_RUNTIME_TO_EMPTY, &value);
 		if (err < 0) {
 			return err;
 		}
-		printk("TTE: %d\n", value.runtime_to_empty);
+		printk("TTE: %d m\n", value.runtime_to_empty);
 		err = fuel_gauge_get_prop(dev, FUEL_GAUGE_RUNTIME_TO_FULL, &value);
 		if (err < 0) {
 			return err;
 		}
-		printk("TTF: %d\n", value.runtime_to_full);
+		printk("TTF: %d m\n", value.runtime_to_full);
 		err = fuel_gauge_get_prop(dev, FUEL_GAUGE_ABSOLUTE_STATE_OF_CHARGE, &value);
 		if (err < 0) {
 			return err;
@@ -71,6 +71,11 @@ int main(void)
 			return err;
 		}
 		printk("Rel SOC: %d%%\n", value.relative_state_of_charge);
+		err = fuel_gauge_get_prop(dev, FUEL_GAUGE_TEMPERATURE, &value);
+		if (err < 0) {
+			return err;
+		}
+		printk("Temp: %d 0.1K\n", value.temperature);
 
 		k_sleep(K_MSEC(1000));
 	}

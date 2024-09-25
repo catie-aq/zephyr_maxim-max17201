@@ -331,23 +331,24 @@ struct max17201_config {
 #define MAX1720X_COMPUTE_PERCENTAGE(reg)       (int)(reg >> 8)
 #define MAX1720X_COMPUTE_VOLTAGE(reg)          (reg / 12.8)
 #define MAX1720X_COMPUTE_CURRENT(reg, rshunt)  ((MAX1720X_COMPUTE_SIGN(reg)) * 1562.5 / rshunt)
-#define MAX1720X_COMPUTE_TEMPERATURE(reg)      (((signed int)(reg)) >> 8)
+#define MAX1720X_COMPUTE_TEMPERATURE(reg)      ((MAX1720X_COMPUTE_SIGN(reg)) >> 8)
 #define MAX1720X_COMPUTE_RESISTENCE(reg)       (reg / 4096)
 #define MAX1720X_COMPUTE_TIME(reg)             (int)(reg * 5.625)
 #define MAX1720X_COMPUTE_CONVERSION_VE(reg)    (reg / 10)
 #define MAX1720X_COMPUTE_CONVERSION_VR(reg)    (reg / 40)
 
-#define MAX1720X_COMPUTE_CYCLES(reg) (reg * 16)
+#define MAX1720X_COMPUTE_CYCLES(reg) (reg * 16) // 1/100th
 
 #define MAX1720X_COMPUTE_REG_CAPACITY(reg, rshunt) (reg * rshunt / 5)
 
 /* ZEPHYR Units Compute */
-#define MAX1720X_ZEPHYR_CURRENT_MA(val)   (int)(val)             // uA
-#define MAX1720X_ZEPHYR_CYCLES(val)       (uint32_t)(val)        // 1/100th
-#define MAX1720X_ZEPHYR_CAPACITY_UAH(val) (uint32_t)(val * 1000) // uAh
-#define MAX1720X_ZEPHYR_CAPACITY_MAH(val) (uint16_t)(val)        // mAh
-#define MAX1720X_ZEPHYR_TIME_MIN(val)     (uint32_t)(val / 60)   // minutes
-#define MAX1720X_ZEPHYR_PERCENTAGE(val)   (uint8_t)(val)
+#define MAX1720X_ZEPHYR_CURRENT_MA(val)    (int)(val)             // uA
+#define MAX1720X_ZEPHYR_CYCLES(val)        (uint32_t)(val)        // 1/100th
+#define MAX1720X_ZEPHYR_CAPACITY_UAH(val)  (uint32_t)(val * 1000) // uAh
+#define MAX1720X_ZEPHYR_CAPACITY_MAH(val)  (uint16_t)(val)        // mAh
+#define MAX1720X_ZEPHYR_TIME_MIN(val)      (uint32_t)(val / 60)   // minutes
+#define MAX1720X_ZEPHYR_PERCENTAGE(val)    (uint8_t)(val)
+#define MAX1720X_ZEPHYR_TEMPERATURE_K(val) (uint16_t)((val + 273.15) * 10) // 0.1K
 
 #define MAX1720X_COMPUTE_ZEPHYR_CURRENT_MA(reg, rshunt)                                            \
 	(MAX1720X_ZEPHYR_CURRENT_MA(MAX1720X_COMPUTE_CURRENT(reg, rshunt))) // mA
@@ -361,6 +362,8 @@ struct max17201_config {
 	(MAX1720X_ZEPHYR_TIME_MIN(MAX1720X_COMPUTE_TIME(reg))) // minutes
 #define MAX1720X_COMPUTE_ZEPHYR_PERCENTAGE(reg)                                                    \
 	(MAX1720X_ZEPHYR_PERCENTAGE(MAX1720X_COMPUTE_PERCENTAGE(reg)))
+#define MAX1720X_COMPUTE_ZEPHYR_TEMPERATURE_K(reg)                                                 \
+	(MAX1720X_ZEPHYR_TEMPERATURE_K(MAX1720X_COMPUTE_TEMPERATURE(reg))) // 0.1K
 
 struct max17201_data {
 	uint8_t device_type;
