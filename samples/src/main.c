@@ -81,6 +81,11 @@ int main(void)
 			return err;
 		}
 		printk("Voltage: %d uV\n", value.voltage);
+		err = fuel_gauge_get_prop(dev, FUEL_GAUGE_STATUS, &value);
+		if (err < 0) {
+			return err;
+		}
+		printk("STATUS: 0x%04X\n", value.fg_status);
 
 		k_sleep(K_MSEC(1000));
 	}

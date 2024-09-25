@@ -217,6 +217,16 @@ static int max17201_get_property(const struct device *dev, fuel_gauge_prop_t pro
 		val->voltage = MAX1720X_COMPUTE_ZEPHYR_VOLTAGE_UV(reg);
 		break;
 
+	case FUEL_GAUGE_STATUS:
+		val->fg_status = 0;
+		err = max17201_i2c_read(dev, MAX1720X_REGISTER_STATUS, &reg);
+		if (err < 0) {
+			LOG_ERR("[EP_D] Unable to read Status, error %d", err);
+			return err;
+		}
+		val->fg_status |= (reg & MAX1720X_MASK_STATUS);
+		break;
+
 	default:
 		LOG_ERR("[EP_X] UNSUPPORTED property!!");
 		return -ENOTSUP;
