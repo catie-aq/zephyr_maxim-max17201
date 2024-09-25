@@ -28,7 +28,7 @@ Based on [MAX17201 Datasheet](https://www.mouser.fr/datasheet/2/609/MAX17201_MAX
 - [ ] Prop : Battery Present
 - [X] Prop : Reported Capacity
 - [X] Prop : Full Capacity
-- [ ] Prop : Design Capacity
+- [X] Prop : Design Capacity
 - [X] Prop : Temperature
 - [ ] Prop : Min Temperature
 - [ ] Prop : Avg Temperature
