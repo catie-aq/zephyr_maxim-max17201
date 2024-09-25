@@ -29,7 +29,7 @@ Based on [MAX17201 Datasheet](https://www.mouser.fr/datasheet/2/609/MAX17201_MAX
 - [X] Prop : Reported Capacity
 - [X] Prop : Full Capacity
 - [ ] Prop : Design Capacity
-- [ ] Prop : Temperature
+- [X] Prop : Temperature
 - [ ] Prop : Min Temperature
 - [ ] Prop : Avg Temperature
 - [ ] Prop : Max Temperature
