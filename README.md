@@ -15,6 +15,7 @@ Based on [MAX17201 Datasheet](https://www.mouser.fr/datasheet/2/609/MAX17201_MAX
 - [X] Set Prop API
 - [X] Prop : State of Charge
 - [X] Prop : Asb State of Charge
+- [X] Prop : Battery present
 - [X] Prop : Current
 - [ ] Prop : Min Current
 - [X] Prop : Avg Current
