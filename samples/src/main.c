@@ -46,6 +46,11 @@ int main(void)
 			return err;
 		}
 		printk("Full Charge Cap: %d uAh\n", value.full_charge_capacity);
+		err = fuel_gauge_get_prop(dev, FUEL_GAUGE_PRESENT_STATE, &value);
+		if (err < 0) {
+			return err;
+		}
+		printk("Battery present: %d\n", value.fg_status);
 		err = fuel_gauge_get_prop(dev, FUEL_GAUGE_REMAINING_CAPACITY, &value);
 		if (err < 0) {
 			return err;
