@@ -522,6 +522,7 @@ static int max17201_init(const struct device *dev)
 		LOG_ERR("[EI_4] DEVICE: [UKNOWN]");
 		return -ENODEV;
 	}
+
 	LOG_INF("CONF: REVISION: [%d]", reg >> 4);
 	LOG_INF("CONF: CELLS NB: [%d]", config->nb_cell);
 	LOG_INF("CONF: R SHUNT: [%d mOhms]", config->rshunt);
@@ -536,18 +537,25 @@ static int max17201_init(const struct device *dev)
 #endif
 	LOG_INF("CONF: INTERNAL TEMP: [%c]", internal_temp);
 
-	err = max17201_i2c_read(dev, MAX1720X_REGISTER_DESIGN_CAP, &reg);
+	err = max17201_i2c_read(dev, MAX1720X_REGISTER_STATUS, &reg);
 	if (err < 0) {
-		LOG_ERR("[EI_5] Unable to read DesignCap, error %d", err);
+		LOG_ERR("[EI_5] Unable to read STATUS, error %d", err);
 		return err;
 	}
 
 	/* 750 mAh capacity is default -> MAX17201 need configuration */
-	if (MAX1720X_COMPUTE_ZEPHYR_CAPACITY_MAH(reg, config->rshunt) == 750) {
+	if (reg & MAX1720X_MASK_STATUS_POWER_ON_RESET) {
+		reg &= ~MAX1720X_MASK_STATUS_POWER_ON_RESET;
+		err = max17201_i2c_write(dev, MAX1720X_REGISTER_STATUS, reg);
+		if (err < 0) {
+			LOG_ERR("[EI_6] Unable to write STATUS, error %d", err);
+			return err;
+		}
+
 		LOG_WRN("MAX17201 Configuration...");
 		err = max17201_configuration(dev);
 		if (err < 0) {
-			LOG_ERR("[EI_6] Unable to configure DEVICE, error %d", err);
+			LOG_ERR("[EI_7] Unable to configure DEVICE, error %d", err);
 			return err;
 		}
 	}
