@@ -51,11 +51,9 @@ And displays each second the following property:
 
 # Requirements
 
-- Power Supply: Fuel Gauge require a battery to monitor.
+- Power supply: fuel gauge requires a battery to monitor.
 - Board allowing I2C communication.
-- Available IRQ GPIO for Alert interrupts.
-- `CONFIG_FUEL_GAUGE=y` in prj.conf to use Fuel Gauge API.
-- `#include "max17201.h"` in your application to acces Flags defined.
+- Available GPIOs for alert interrupts.
 
 # References
 
