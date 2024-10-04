@@ -67,7 +67,34 @@ static int max17201_i2c_write(const struct device *dev, uint16_t reg_addr, uint1
 static int max17201_set_property(const struct device *dev, fuel_gauge_prop_t prop,
 				 union fuel_gauge_prop_val val)
 {
-	return -ENOTSUP;
+	const struct max17201_config *config = dev->config;
+	uint16_t reg;
+	int err;
+
+	switch (prop) {
+	/* Configure Alert Interrupt */
+	case FUEL_GAUGE_SBS_MODE:
+		err = max17201_i2c_read(dev, MAX1720X_REGISTER_CONFIG, &reg);
+		if (err < 0) {
+			LOG_ERR("[ES_1] Unable to read Config, error %d", err);
+			return err;
+		}
+
+		reg &= ~MAX1720X_MASK_CONFIG_ALERT_ENABLE;
+		reg |= (val.fg_status) & MAX1720X_MASK_CONFIG_ALERT_ENABLE;
+
+		err = max17201_i2c_write(dev, MAX1720X_REGISTER_CONFIG, reg);
+		if (err < 0) {
+			LOG_ERR("[ES_1] Unable to write Config, error %d", err);
+			return err;
+		}
+		break;
+
+	default:
+		return -ENOTSUP;
+	}
+
+	return 0;
 }
 
 static int max17201_get_property(const struct device *dev, fuel_gauge_prop_t prop,
