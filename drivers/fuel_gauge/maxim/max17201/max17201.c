@@ -455,8 +455,8 @@ static int max17201_configuration(const struct device *dev)
 #endif
 	uint8_t fgt = ((config->ext_thermistor1 ? (config->ext_thermistor2 ? 0x0U : 0x1U) : 0x0U));
 	/* nPackCfg configuration */
-	config_reg = (fgt << 15) | (0 << 14) | ((config->ext_thermistor1 ? 0x1U : 0x0U) << 13) |
-		     ((config->ext_thermistor2 ? 0x1U : 0x0U) << 12) | (internal_temp << 11) |
+	config_reg = (fgt << 15) | (0 << 14) | ((config->ext_thermistor2 ? 0x1U : 0x0U) << 13) |
+		     ((config->ext_thermistor1 ? 0x1U : 0x0U) << 12) | (internal_temp << 11) |
 		     (MAX1720X_ENABLE << 10) | (MAX1720X_DISABLE << 9) | (MAX1720X_DISABLE << 8) |
 		     ((MAX17201_CELL_BALANCING & 0x07U) << 5) | (0 << 4) |
 		     (((uint8_t)(config->nb_cell) & 0x0FU) << 0);
