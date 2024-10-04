@@ -2,23 +2,33 @@
 
 This sample application provides an example usage of the Maxim MAX17201 Fuel Gauge.
 
-- Configure Fuel Gauge according to DeviceTree property.
-- Display each second the following property:
-  - Average Current (uA)
-  - Current (uA)
-  - Cycles (1/100th)
-  - Flags (Refer to max17201.h for flags indexes)
-  - Full Charge Capacity (uAh)
-  - Battery presence
-  - Remaining Capaciy (uAh)
-  - Time To Empty (minutes)
-  - Time To Full (minutes)
-  - Absolute State Of Charge
-  - Relative State Of Charge
-  - Temperature (0.1K)
-  - Cell Voltage (uV)
-  - Status (Refer to max17201.h for flags indexes)
-  - Design Capacity (mAh)
+It configures the fuel gauge for the following battery settings from devicetree:
+
+- `nb-cell`: Battery cell number.
+- `rshunt`: Shunt resistor in mOmhs.
+- `capacity`: Battery theorical capacity in mAh.
+- `empty-voltage`: Empty battery voltage in mV.
+- `external-thermistor1`: Presence of external thermistor on AIN1.
+- `external-thermistor2`: Presence of external thermistor on AIN2.
+- `alert-gpios`: GPIO used for alert interrupt signal.
+
+And displays each second the following property:
+
+- Average Current (uA)
+- Current (uA)
+- Cycles (1/100th)
+- Flags (Refer to `max17201.h` for flags indexes)
+- Full Charge Capacity (uAh)
+- Battery presence
+- Remaining Capaciy (uAh)
+- Time To Empty (minutes)
+- Time To Full (minutes)
+- Absolute State Of Charge
+- Relative State Of Charge
+- Temperature (0.1K)
+- Cell Voltage (uV)
+- Status (Refer to `max17201.h` for flags indexes)
+- Design Capacity (mAh)
 
 > [!NOTE]
 >
@@ -29,12 +39,12 @@ This sample application provides an example usage of the Maxim MAX17201 Fuel Gau
 > 	compatible = "maxim,max17201";
 > 	reg = <0x36>;
 > 	sbs = <0x0b>;
-> 	nb-cell = <1>;
-> 	rshunt = <20>;
-> 	capacity = <800>;
-> 	empty-voltage = <3050>;
-> 	external-thermistor1;
-> 	external-thermistor2;
+> 	nb-cell = <1>; /* Battery cell number */
+> 	rshunt = <20>; /* Shunt resistor value in mOhms */
+> 	capacity = <800>; /* Battery capacity in mA·h */
+> 	empty-voltage = <3050>; /* Empty battery voltage in mV */
+> 	external-thermistor1; /* Presence of external thermistor on AIN1 */
+> 	external-thermistor2; /* Presence of external thermistor on AIN2 */
 > 	alert-gpios = <&sixtron_connector DIO1 (GPIO_ACTIVE_LOW | GPIO_PULL_UP)>;
 > };
 > ```
