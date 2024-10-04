@@ -22,9 +22,9 @@ This sample application provides an example usage of the Maxim MAX17201 Fuel Gau
 
 > [!NOTE]
 >
-> Don't forget to specify MAX17201 configuration in the Device Tree
+> Don't forget to specify MAX17201 configuration in the devicetree:
 >
-> ```shell
+> ```
 > max172010: max17201@36 {
 > 	compatible = "maxim,max17201";
 > 	reg = <0x36>;
