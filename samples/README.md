@@ -64,6 +64,10 @@ And displays each second the following property:
 
 # Building and Running
 
+> [!NOTE]
+>
+> `CONFIG_FUEL_GAUGE=y` in prj.conf to use fuel gauge API.
+
 ```shell
 cd <driver_directory>
 west build -p always -b <BOARD> samples/ -- -D DTC_OVERLAY_FILE=sixtron_bus.overlay
