@@ -88,6 +88,7 @@ static void gpio_callback_handler(const struct device *p_port, struct gpio_callb
 
 int main(void)
 {
+	union fuel_gauge_prop_val value;
 	int err;
 
 	if (!device_is_ready(fg_dev)) {
@@ -100,7 +101,7 @@ int main(void)
 		return -ENODEV;
 	}
 
-	printk("GPIO configure");
+	printk("GPIO configure\n");
 	err = gpio_pin_configure_dt(&alert_gpio, GPIO_INPUT);
 	if (err < 0) {
 		printk("Failed to configure GPIO!!");
@@ -122,6 +123,34 @@ int main(void)
 	}
 
 	gpio_work.handler = gpio_worker;
+	current_min_work.handler = current_min_worker;
+	current_max_work.handler = current_max_worker;
+	soc_percent_work.handler = soc_percent_worker;
+	voltage_min_work.handler = voltage_min_worker;
+	voltage_max_work.handler = voltage_max_worker;
+	temp_min_work.handler = temp_min_worker;
+	temp_max_work.handler = temp_max_worker;
+
+	/* Setup alert for State Of Charge thresholds value (0xFF00 = no thresholds)*/
+	value.flags = 0xFF00U; /* [Mx(8 bits) | Mn(8 bits)]  with 1% LSB resolution */
+	err = fuel_gauge_set_prop(fg_dev, MAX1720X_FUEL_GAUGE_SOC_THRESHOLDS, value);
+	if (err < 0) {
+		return err;
+	}
+
+	/* Enable Alert irq */
+	value.flags = MAX1720X_ALERT_ENABLE_THRESHOLDS | MAX1720X_ALERT_ENABLE_SOC_PERCENT;
+	err = fuel_gauge_set_prop(fg_dev, MAX1720X_FUEL_GAUGE_ALERT_ENABLE, value);
+	if (err < 0) {
+		return err;
+	}
+
+	/* Clear Alert Flags */
+	value.flags = 0x0000U;
+	err = fuel_gauge_set_prop(fg_dev, FUEL_GAUGE_STATUS, value);
+	if (err < 0) {
+		return err;
+	}
 
 	while (1) {
 		/* Example for fuel gauge driver */
