@@ -19,6 +19,6 @@
 		empty-voltage = <3050>;
 		external-thermistor1;
 		external-thermistor2;
-		alert-gpios = <&sixtron_connector DIO1 (GPIO_ACTIVE_LOW | GPIO_PULL_UP)>;
+		alert-gpios = <&sixtron_connector DIO1 (GPIO_ACTIVE_LOW | GPIO_OPEN_DRAIN)>;
 	};
 };
