@@ -510,6 +510,33 @@ static int max17201_configuration(const struct device *dev)
 	}
 	k_sleep(K_MSEC(MAX1720X_TIMING_CONFIG_ACKNOLEDGE_MS));
 
+	/* Configure Current thresholds for alert */
+	config_reg = (MAX1720X_COMPUTE_TH_CURRENT(config->current_th[1], config->rshunt) << 8) |
+		     (MAX1720X_COMPUTE_TH_CURRENT(config->current_th[0], config->rshunt) & 0x00FFU);
+	err = max17201_i2c_write(dev, MAX1720X_REGISTER_I_ALRT_TH, config_reg);
+	if (err < 0) {
+		LOG_ERR("[EC_F] Unable to write I Threshold, error %d", err);
+		return err;
+	}
+
+	/* Configure Voltage thresholds for alert */
+	config_reg = (MAX1720X_COMPUTE_TH_VOLTAGE(config->voltage_th[1]) << 8) |
+		     (MAX1720X_COMPUTE_TH_VOLTAGE(config->voltage_th[0]) & 0x00FFU);
+	err = max17201_i2c_write(dev, MAX1720X_REGISTER_V_ALR_TH, config_reg);
+	if (err < 0) {
+		LOG_ERR("[EC_F] Unable to write V Threshold, error %d", err);
+		return err;
+	}
+
+	/* Configure Temperature thresholds for alert */
+	config_reg = (MAX1720X_COMPUTE_TH_TEMPERATURE(config->temperature_th[1]) << 8) |
+		     (MAX1720X_COMPUTE_TH_TEMPERATURE(config->temperature_th[0]) & 0x00FFU);
+	err = max17201_i2c_write(dev, MAX1720X_REGISTER_T_ALR_TH, config_reg);
+	if (err < 0) {
+		LOG_ERR("[EC_F] Unable to write T Threshold, error %d", err);
+		return err;
+	}
+
 	return 0;
 }
 
