@@ -17,14 +17,68 @@ static const struct gpio_dt_spec alert_gpio =
 struct gpio_callback gpio_cb;
 struct k_work gpio_work;
 
-static void gpio_callback_handler(const struct device *p_port, struct gpio_callback *p_cb,
-				  gpio_port_pins_t pins)
-{
-	ARG_UNUSED(p_port);
-	ARG_UNUSED(p_cb);
-	ARG_UNUSED(pins);
+struct k_work current_min_work;
+struct k_work current_max_work;
+struct k_work soc_percent_work;
+struct k_work voltage_min_work;
+struct k_work voltage_max_work;
+struct k_work temp_min_work;
+struct k_work temp_max_work;
 
-	k_work_submit(&gpio_work); // Using work queue to exit isr context
+static void current_min_worker(struct k_work *p_work)
+{
+	ARG_UNUSED(p_work);
+
+	printk("ALERT: [I MIN]\n");
+	return;
+}
+
+static void current_max_worker(struct k_work *p_work)
+{
+	ARG_UNUSED(p_work);
+
+	printk("ALERT: [I MAX]\n");
+	return;
+}
+
+static void soc_percent_worker(struct k_work *p_work)
+{
+	ARG_UNUSED(p_work);
+
+	printk("IRQ: [SOC 1%%]\n");
+	return;
+}
+
+static void voltage_min_worker(struct k_work *p_work)
+{
+	ARG_UNUSED(p_work);
+
+	printk("ALERT: [V MIN]\n");
+	return;
+}
+
+static void voltage_max_worker(struct k_work *p_work)
+{
+	ARG_UNUSED(p_work);
+
+	printk("ALERT: [V MAX]\n");
+	return;
+}
+
+static void temp_min_worker(struct k_work *p_work)
+{
+	ARG_UNUSED(p_work);
+
+	printk("ALERT: [T MIN]\n");
+	return;
+}
+
+static void temp_max_worker(struct k_work *p_work)
+{
+	ARG_UNUSED(p_work);
+
+	printk("ALERT: [T MAX]\n");
+	return;
 }
 
 static void gpio_worker(struct k_work *p_work)
