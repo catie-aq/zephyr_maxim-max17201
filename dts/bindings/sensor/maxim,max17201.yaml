@@ -35,6 +35,18 @@ properties:
     type: int
     required: true
     description: Voltage threshold for empty detection in mV.
+  voltage-thresholds:
+    type: array
+    description: Voltage thresholds [MIN, MAX] for alert detection in mV.
+    default: [3600, 4250]
+  current-thresholds:
+    type: array
+    description: Current thresholds [MIN, MAX] for alert detection in mA.
+    default: [-800, 800]
+  temperature-thresholds:
+    type: array
+    description: Temperature thresholds [MIN, MAX] for alert detection in 0.1K.
+    default: [2732, 3181]
   external-thermistor1:
     type: boolean
     description: Enable external thermistor 1.
