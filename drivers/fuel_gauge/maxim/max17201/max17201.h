@@ -352,7 +352,10 @@ struct max17201_config {
 
 #define MAX1720X_COMPUTE_CYCLES(reg) (reg * 16) /* 1/100th */
 
-#define MAX1720X_COMPUTE_REG_CAPACITY(reg, rshunt) (reg * rshunt / 5)
+#define MAX1720X_COMPUTE_REG_CAPACITY(val, rshunt) (val * rshunt / 5)
+#define MAX1720X_COMPUTE_TH_CURRENT(val, rshunt)   (uint8_t)((int)(val * rshunt / 400))
+#define MAX1720X_COMPUTE_TH_VOLTAGE(val)           (uint8_t)((int)(val / 20))
+#define MAX1720X_COMPUTE_TH_TEMPERATURE(val)       (uint8_t)((int)((val / 10) - 273.15))
 
 /* ZEPHYR Units Compute */
 #define MAX1720X_ZEPHYR_CURRENT_MA(val)    (int)(val)             /* uA */
