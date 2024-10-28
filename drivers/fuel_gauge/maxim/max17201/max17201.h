@@ -48,6 +48,9 @@ struct max17201_config {
 	int rshunt;
 	int capacity;
 	int empty_voltage;
+	int voltage_th[2];
+	int current_th[2];
+	int temperature_th[2];
 	bool ext_thermistor1;
 	bool ext_thermistor2;
 	enum thermistor_ntc_mode ntc_thermistors;
