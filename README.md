@@ -11,7 +11,7 @@ Based on [MAX17201 Datasheet](https://www.mouser.fr/datasheet/2/609/MAX17201_MAX
 - [X] Configure External thermistor
 - [X] Configure Empty Voltage
 - [X] Check design Capacity to init configuration or not
-- [ ] Alert interrupts
+- [X] Alert interrupts
 - [X] Set Prop API
 - [X] Prop : State of Charge
 - [X] Prop : Asb State of Charge
