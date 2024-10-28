@@ -8,6 +8,9 @@ It configures the fuel gauge for the following battery settings from devicetree:
 - `rshunt`: Shunt resistor in mOmhs.
 - `capacity`: Battery theorical capacity in mAh.
 - `empty-voltage`: Empty battery voltage in mV.
+- `voltage-thresholds`: Alert battery voltage thresholds [MIN, MAX] in mV.
+- `current-thresholds`: Alert battery current thresholds [MIN, MAX] in mV.
+- `temperature-thresholds`: Alert battery temperature thresholds [MIN, MAX] in mV.
 - `external-thermistor1`: Presence of external thermistor on AIN1.
 - `external-thermistor2`: Presence of external thermistor on AIN2.
 - `alert-gpios`: GPIO used for alert interrupt signal.
@@ -27,8 +30,10 @@ And displays each second the following property:
 - Relative State Of Charge
 - Temperature (0.1K)
 - Cell Voltage (uV)
-- Status (Refer to `max17201.h` for flags indexes)
+- Status (Refer to `max17201.h` for flags indexes): `MAX1720X_FLAGS_ALERT_XXX`
 - Design Capacity (mAh)
+
+Once state of charge percent interrupt is enable, the system print text every time the state of charge change by `1%`.
 
 > [!NOTE]
 >
@@ -43,6 +48,9 @@ And displays each second the following property:
 > 	rshunt = <20>; /* Shunt resistor value in mOhms */
 > 	capacity = <800>; /* Battery capacity in mA·h */
 > 	empty-voltage = <3050>; /* Empty battery voltage in mV */
+> 	voltage-thresholds = <3600 4250>; /* Allert battery voltage in mV */
+> 	current-thresholds = <(-800) 800>; /* Current battery voltage in mV */
+> 	temperature-thresholds = <2732 3181>; /* Temperature battery voltage in mV */
 > 	external-thermistor1; /* Presence of external thermistor on AIN1 */
 > 	external-thermistor2; /* Presence of external thermistor on AIN2 */
 > 	alert-gpios = <&sixtron_connector DIO1 (GPIO_ACTIVE_LOW | GPIO_PULL_UP)>;
@@ -92,13 +100,13 @@ west flash
 ----------------
 Avg Current: -23281
 Current: -23906
-Cycles: 0
+Cycles: 0%
 FLAGS: 0x00000080
 Full Charge Cap: 800000 uAh
 Battery present: 1
 Remaining Cap: 595000 uAh
-TTE: 1495 m
-TTF: 6143 m
+TTE: 1495 minutes
+TTF: 6143 minutes
 Abs SOC: 74%
 Rel SOC: 74%
 Temp: 3001 0.1K
@@ -108,13 +116,13 @@ DesignCap: 800 mAh
 ----------------
 Avg Current: -23281
 Current: -23906
-Cycles: 0
+Cycles: 0%
 FLAGS: 0x00000080
 Full Charge Cap: 800000 uAh
 Battery present: 1
 Remaining Cap: 595000 uAh
-TTE: 1495 m
-TTF: 6143 m
+TTE: 1495 minutes
+TTF: 6143 minutes
 Abs SOC: 74%
 Rel SOC: 74%
 Temp: 3001 0.1K
