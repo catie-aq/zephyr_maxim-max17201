@@ -182,7 +182,7 @@ static int max17201_get_property(const struct device *dev, fuel_gauge_prop_t pro
 			LOG_ERR("[EP_4] Unable to read Status_2, error %d", err);
 			return err;
 		}
-		val->flags |= ((reg & MAX1720X_MASK_STATUS_2) << (16 + 2));
+		val->flags |= ((reg & MAX1720X_MASK_STATUS_2) << (32 - 2));
 		break;
 
 	case FUEL_GAUGE_FULL_CHARGE_CAPACITY:
