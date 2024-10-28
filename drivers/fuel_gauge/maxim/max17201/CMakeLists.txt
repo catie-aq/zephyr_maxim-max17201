@@ -4,3 +4,4 @@
 zephyr_library()
 
 zephyr_library_sources(max17201.c)
+zephyr_include_directories(include)
