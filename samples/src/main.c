@@ -8,6 +8,8 @@
 #include <zephyr/drivers/fuel_gauge.h>
 #include <zephyr/drivers/gpio.h>
 
+#include "max17201.h"
+
 static const struct device *fg_dev = DEVICE_DT_GET(DT_NODELABEL(max172010));
 static const struct gpio_dt_spec alert_gpio =
 	GPIO_DT_SPEC_GET(DT_NODELABEL(max172010), alert_gpios);
