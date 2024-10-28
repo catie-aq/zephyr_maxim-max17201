@@ -155,22 +155,21 @@ int main(void)
 	while (1) {
 		/* Example for fuel gauge driver */
 		printk("----------------\n");
-		union fuel_gauge_prop_val value;
 		err = fuel_gauge_get_prop(fg_dev, FUEL_GAUGE_AVG_CURRENT, &value);
 		if (err < 0) {
 			return err;
 		}
-		printk("Avg Current: %d\n", value.avg_current);
+		printk("Avg Current: %d uA\n", value.avg_current);
 		err = fuel_gauge_get_prop(fg_dev, FUEL_GAUGE_CURRENT, &value);
 		if (err < 0) {
 			return err;
 		}
-		printk("Current: %d\n", value.current);
+		printk("Current: %d uA\n", value.current);
 		err = fuel_gauge_get_prop(fg_dev, FUEL_GAUGE_CYCLE_COUNT, &value);
 		if (err < 0) {
 			return err;
 		}
-		printk("Cycles: %d\n", value.cycle_count);
+		printk("Cycles: %d%%\n", value.cycle_count);
 		err = fuel_gauge_get_prop(fg_dev, FUEL_GAUGE_FLAGS, &value);
 		if (err < 0) {
 			return err;
@@ -195,12 +194,12 @@ int main(void)
 		if (err < 0) {
 			return err;
 		}
-		printk("TTE: %d m\n", value.runtime_to_empty);
+		printk("TTE: %d minutes\n", value.runtime_to_empty);
 		err = fuel_gauge_get_prop(fg_dev, FUEL_GAUGE_RUNTIME_TO_FULL, &value);
 		if (err < 0) {
 			return err;
 		}
-		printk("TTF: %d m\n", value.runtime_to_full);
+		printk("TTF: %d minutes\n", value.runtime_to_full);
 		err = fuel_gauge_get_prop(fg_dev, FUEL_GAUGE_ABSOLUTE_STATE_OF_CHARGE, &value);
 		if (err < 0) {
 			return err;
@@ -232,6 +231,6 @@ int main(void)
 		}
 		printk("DesignCap: %d mAh\n", value.design_cap);
 
-		k_sleep(K_MSEC(1000));
+		k_sleep(K_MSEC(100));
 	}
 }
