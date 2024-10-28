@@ -14,7 +14,7 @@ static const struct device *fg_dev = DEVICE_DT_GET(DT_NODELABEL(max172010));
 static const struct gpio_dt_spec alert_gpio =
 	GPIO_DT_SPEC_GET(DT_NODELABEL(max172010), alert_gpios);
 
-static struct gpio_callback gpio_cb;
+struct gpio_callback gpio_cb;
 struct k_work gpio_work;
 
 static void gpio_callback_handler(const struct device *p_port, struct gpio_callback *p_cb,
@@ -29,20 +29,61 @@ static void gpio_callback_handler(const struct device *p_port, struct gpio_callb
 
 static void gpio_worker(struct k_work *p_work)
 {
+	ARG_UNUSED(p_work);
+
 	union fuel_gauge_prop_val value;
 	int err;
 
 	err = fuel_gauge_get_prop(fg_dev, FUEL_GAUGE_STATUS, &value);
 	if (err < 0) {
+		printk("IRQ GPIO worker read FLAGS error\n");
 		return;
 	}
 
-	printk("STATUS: 0x%04X\n", value.fg_status);
+	if (value.fg_status & MAX1720X_FLAGS_ALERT_CURR_MIN) {
+		value.fg_status &= ~MAX1720X_FLAGS_ALERT_CURR_MIN;
+		k_work_submit(&current_min_work);
+	}
+	if (value.fg_status & MAX1720X_FLAGS_ALERT_CURR_MAX) {
+		value.fg_status &= ~MAX1720X_FLAGS_ALERT_CURR_MAX;
+		k_work_submit(&current_max_work);
+	}
+	if (value.fg_status & MAX1720X_FLAGS_ALERT_SOC_PERCENT) {
+		value.fg_status &= ~MAX1720X_FLAGS_ALERT_SOC_PERCENT;
+		k_work_submit(&soc_percent_work);
+	}
+	if (value.fg_status & MAX1720X_FLAGS_ALERT_VOLT_MIN) {
+		value.fg_status &= ~MAX1720X_FLAGS_ALERT_VOLT_MIN;
+		k_work_submit(&voltage_min_work);
+	}
+	if (value.fg_status & MAX1720X_FLAGS_ALERT_VOLT_MAX) {
+		value.fg_status &= ~MAX1720X_FLAGS_ALERT_VOLT_MAX;
+		k_work_submit(&voltage_max_work);
+	}
+	if (value.fg_status & MAX1720X_FLAGS_ALERT_TEMP_MIN) {
+		value.fg_status &= ~MAX1720X_FLAGS_ALERT_TEMP_MIN;
+		k_work_submit(&temp_min_work);
+	}
+	if (value.fg_status & MAX1720X_FLAGS_ALERT_TEMP_MAX) {
+		value.fg_status &= ~MAX1720X_FLAGS_ALERT_TEMP_MAX;
+		k_work_submit(&temp_max_work);
+	}
 
-	// err = fuel_gauge_set_prop(fg_dev, FUEL_GAUGE_STATUS, &value);
-	// if (err < 0) {
-	//	LOG_ERR("Alert GPIO worker read FLAGS error");
-	// }
+	err = fuel_gauge_set_prop(fg_dev, FUEL_GAUGE_STATUS, value);
+	if (err < 0) {
+		printk("Alert GPIO worker read FLAGS error\n");
+		return;
+	}
+}
+
+static void gpio_callback_handler(const struct device *p_port, struct gpio_callback *p_cb,
+				  gpio_port_pins_t pins)
+{
+	ARG_UNUSED(p_port);
+	ARG_UNUSED(p_cb);
+	ARG_UNUSED(pins);
+
+	k_work_submit(&gpio_work); /* Using work queue to exit isr context */
 }
 
 int main(void)
