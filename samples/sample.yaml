@@ -1,6 +1,5 @@
 sample:
-  description: Demonstration of the MAX17201 fuel gauge driver
-  name: MAX17201 Sample
+  name: MAX17201 fuel gauge sample
 tests:
   sample.default:
     tags: fuel_gauge
