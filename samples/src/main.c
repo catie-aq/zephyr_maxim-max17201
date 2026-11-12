@@ -209,16 +209,16 @@ int main(void)
 	while (1) {
 		/* Example for fuel gauge driver */
 		printk("----------------\n");
-		err = fuel_gauge_get_prop(fg_dev, FUEL_GAUGE_AVG_CURRENT, &value);
+		err = fuel_gauge_get_prop(fg_dev, FUEL_GAUGE_AVG_CURRENT_UA, &value);
 		if (err < 0) {
 			return err;
 		}
-		printk("Avg Current: %d uA\n", value.avg_current);
-		err = fuel_gauge_get_prop(fg_dev, FUEL_GAUGE_CURRENT, &value);
+		printk("Avg Current: %d uA\n", value.avg_current_ua);
+		err = fuel_gauge_get_prop(fg_dev, FUEL_GAUGE_CURRENT_UA, &value);
 		if (err < 0) {
 			return err;
 		}
-		printk("Current: %d uA\n", value.current);
+		printk("Current: %d uA\n", value.current_ua);
 		err = fuel_gauge_get_prop(fg_dev, FUEL_GAUGE_CYCLE_COUNT, &value);
 		if (err < 0) {
 			return err;
@@ -229,51 +229,51 @@ int main(void)
 			return err;
 		}
 		printk("FLAGS: 0x%08X\n", value.flags);
-		err = fuel_gauge_get_prop(fg_dev, FUEL_GAUGE_FULL_CHARGE_CAPACITY, &value);
+		err = fuel_gauge_get_prop(fg_dev, FUEL_GAUGE_FULL_CHARGE_CAPACITY_UAH, &value);
 		if (err < 0) {
 			return err;
 		}
-		printk("Full Charge Cap: %d uAh\n", value.full_charge_capacity);
+		printk("Full Charge Cap: %d uAh\n", value.full_charge_capacity_uah);
 		err = fuel_gauge_get_prop(fg_dev, FUEL_GAUGE_PRESENT_STATE, &value);
 		if (err < 0) {
 			return err;
 		}
 		printk("Battery present: %d\n", value.fg_status);
-		err = fuel_gauge_get_prop(fg_dev, FUEL_GAUGE_REMAINING_CAPACITY, &value);
+		err = fuel_gauge_get_prop(fg_dev, FUEL_GAUGE_REMAINING_CAPACITY_UAH, &value);
 		if (err < 0) {
 			return err;
 		}
-		printk("Remaining Cap: %d uAh\n", value.remaining_capacity);
-		err = fuel_gauge_get_prop(fg_dev, FUEL_GAUGE_RUNTIME_TO_EMPTY, &value);
+		printk("Remaining Cap: %d uAh\n", value.remaining_capacity_uah);
+		err = fuel_gauge_get_prop(fg_dev, FUEL_GAUGE_RUNTIME_TO_EMPTY_MINS, &value);
 		if (err < 0) {
 			return err;
 		}
-		printk("TTE: %d minutes\n", value.runtime_to_empty);
-		err = fuel_gauge_get_prop(fg_dev, FUEL_GAUGE_RUNTIME_TO_FULL, &value);
+		printk("TTE: %d minutes\n", value.runtime_to_empty_mins);
+		err = fuel_gauge_get_prop(fg_dev, FUEL_GAUGE_RUNTIME_TO_FULL_MINS, &value);
 		if (err < 0) {
 			return err;
 		}
-		printk("TTF: %d minutes\n", value.runtime_to_full);
-		err = fuel_gauge_get_prop(fg_dev, FUEL_GAUGE_ABSOLUTE_STATE_OF_CHARGE, &value);
+		printk("TTF: %d minutes\n", value.runtime_to_full_mins);
+		err = fuel_gauge_get_prop(fg_dev, FUEL_GAUGE_ABSOLUTE_STATE_OF_CHARGE_PCT, &value);
 		if (err < 0) {
 			return err;
 		}
-		printk("Abs SOC: %d%%\n", value.absolute_state_of_charge);
-		err = fuel_gauge_get_prop(fg_dev, FUEL_GAUGE_RELATIVE_STATE_OF_CHARGE, &value);
+		printk("Abs SOC: %d%%\n", value.absolute_state_of_charge_pct);
+		err = fuel_gauge_get_prop(fg_dev, FUEL_GAUGE_RELATIVE_STATE_OF_CHARGE_PCT, &value);
 		if (err < 0) {
 			return err;
 		}
-		printk("Rel SOC: %d%%\n", value.relative_state_of_charge);
-		err = fuel_gauge_get_prop(fg_dev, FUEL_GAUGE_TEMPERATURE, &value);
+		printk("Rel SOC: %d%%\n", value.relative_state_of_charge_pct);
+		err = fuel_gauge_get_prop(fg_dev, FUEL_GAUGE_TEMPERATURE_DK, &value);
 		if (err < 0) {
 			return err;
 		}
-		printk("Temp: %d 0.1K\n", value.temperature);
-		err = fuel_gauge_get_prop(fg_dev, FUEL_GAUGE_VOLTAGE, &value);
+		printk("Temp: %d 0.1K\n", value.temperature_dk);
+		err = fuel_gauge_get_prop(fg_dev, FUEL_GAUGE_VOLTAGE_UV, &value);
 		if (err < 0) {
 			return err;
 		}
-		printk("Voltage: %d uV\n", value.voltage);
+		printk("Voltage: %d uV\n", value.voltage_uv);
 		err = fuel_gauge_get_prop(fg_dev, FUEL_GAUGE_STATUS, &value);
 		if (err < 0) {
 			return err;

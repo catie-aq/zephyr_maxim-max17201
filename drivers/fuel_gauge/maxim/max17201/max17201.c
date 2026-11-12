@@ -135,23 +135,23 @@ static int max17201_get_property(const struct device *dev, fuel_gauge_prop_t pro
 	int err;
 
 	switch (prop) {
-	case FUEL_GAUGE_AVG_CURRENT:
+	case FUEL_GAUGE_AVG_CURRENT_UA:
 		err = max17201_i2c_read(dev, MAX1720X_REGISTER_AVG_CURRENT, &reg);
 		if (err < 0) {
 			LOG_ERR("[EP_1] Unable to read AvgCurrent, error %d", err);
 			return err;
 		}
-		val->avg_current = MAX1720X_COMPUTE_ZEPHYR_CURRENT_MA(reg, config->rshunt);
+		val->avg_current_ua = MAX1720X_COMPUTE_ZEPHYR_CURRENT_MA(reg, config->rshunt);
 		break;
 
-	case FUEL_GAUGE_CURRENT:
-		val->current = 0;
+	case FUEL_GAUGE_CURRENT_UA:
+		val->current_ua = 0;
 		err = max17201_i2c_read(dev, MAX1720X_REGISTER_CURRENT, &reg);
 		if (err < 0) {
 			LOG_ERR("[EP_2] Unable to read Current, error %d", err);
 			return err;
 		}
-		val->current = MAX1720X_COMPUTE_ZEPHYR_CURRENT_MA(reg, config->rshunt);
+		val->current_ua = MAX1720X_COMPUTE_ZEPHYR_CURRENT_MA(reg, config->rshunt);
 		break;
 
 	case FUEL_GAUGE_CYCLE_COUNT:
@@ -185,13 +185,13 @@ static int max17201_get_property(const struct device *dev, fuel_gauge_prop_t pro
 		val->flags |= ((reg & MAX1720X_MASK_STATUS_2) << (32 - 2));
 		break;
 
-	case FUEL_GAUGE_FULL_CHARGE_CAPACITY:
+	case FUEL_GAUGE_FULL_CHARGE_CAPACITY_UAH:
 		err = max17201_i2c_read(dev, MAX1720X_REGISTER_FULL_CAP_REP, &reg);
 		if (err < 0) {
 			LOG_ERR("[EP_5] Unable to read FullCapRep, error %d", err);
 			return err;
 		}
-		val->full_charge_capacity =
+		val->full_charge_capacity_uah =
 			MAX1720X_COMPUTE_ZEPHYR_CAPACITY_UAH(reg, config->rshunt);
 		break;
 
@@ -205,35 +205,36 @@ static int max17201_get_property(const struct device *dev, fuel_gauge_prop_t pro
 				 MAX1720X_SHIFT_STATUS_BATTERY_PRESENT;
 		break;
 
-	case FUEL_GAUGE_REMAINING_CAPACITY:
+	case FUEL_GAUGE_REMAINING_CAPACITY_UAH:
 		err = max17201_i2c_read(dev, MAX1720X_REGISTER_REP_CAP, &reg);
 		if (err < 0) {
 			LOG_ERR("[EP_7] Unable to read RepCap, error %d", err);
 			return err;
 		}
-		val->remaining_capacity = MAX1720X_COMPUTE_ZEPHYR_CAPACITY_UAH(reg, config->rshunt);
+		val->remaining_capacity_uah =
+			MAX1720X_COMPUTE_ZEPHYR_CAPACITY_UAH(reg, config->rshunt);
 		break;
 
-	case FUEL_GAUGE_RUNTIME_TO_EMPTY:
+	case FUEL_GAUGE_RUNTIME_TO_EMPTY_MINS:
 		err = max17201_i2c_read(dev, MAX1720X_REGISTER_TTE, &reg);
 		if (err < 0) {
 			LOG_ERR("[EP_8] Unable to read TTE, error %d", err);
 			return err;
 		}
-		val->runtime_to_empty = MAX1720X_COMPUTE_ZEPHYR_TIME_MIN(reg);
+		val->runtime_to_empty_mins = MAX1720X_COMPUTE_ZEPHYR_TIME_MIN(reg);
 		break;
 
-	case FUEL_GAUGE_RUNTIME_TO_FULL:
-		val->runtime_to_full = 0;
+	case FUEL_GAUGE_RUNTIME_TO_FULL_MINS:
+		val->runtime_to_full_mins = 0;
 		err = max17201_i2c_read(dev, MAX1720X_REGISTER_TTF, &reg);
 		if (err < 0) {
 			LOG_ERR("[EP_9] Unable to read TTF, error %d", err);
 			return err;
 		}
-		val->runtime_to_full = MAX1720X_COMPUTE_ZEPHYR_TIME_MIN(reg);
+		val->runtime_to_full_mins = MAX1720X_COMPUTE_ZEPHYR_TIME_MIN(reg);
 		break;
 
-	case FUEL_GAUGE_ABSOLUTE_STATE_OF_CHARGE:
+	case FUEL_GAUGE_ABSOLUTE_STATE_OF_CHARGE_PCT:
 		uint16_t temp[2];
 		err = max17201_i2c_read(dev, MAX1720X_REGISTER_DESIGN_CAP, &temp[0]);
 		if (err < 0) {
@@ -245,34 +246,34 @@ static int max17201_get_property(const struct device *dev, fuel_gauge_prop_t pro
 			LOG_ERR("[EP_A] Unable to read RepCap, error %d", err);
 			return err;
 		}
-		val->absolute_state_of_charge = (uint8_t)((100 * temp[1]) / temp[0]);
+		val->absolute_state_of_charge_pct = (uint8_t)((100 * temp[1]) / temp[0]);
 		break;
 
-	case FUEL_GAUGE_RELATIVE_STATE_OF_CHARGE:
+	case FUEL_GAUGE_RELATIVE_STATE_OF_CHARGE_PCT:
 		err = max17201_i2c_read(dev, MAX1720X_REGISTER_REP_SOC, &reg);
 		if (err < 0) {
 			LOG_ERR("[EP_B] Unable to read RepSOC, error %d", err);
 			return err;
 		}
-		val->relative_state_of_charge = MAX1720X_COMPUTE_ZEPHYR_PERCENTAGE(reg);
+		val->relative_state_of_charge_pct = MAX1720X_COMPUTE_ZEPHYR_PERCENTAGE(reg);
 		break;
 
-	case FUEL_GAUGE_TEMPERATURE:
+	case FUEL_GAUGE_TEMPERATURE_DK:
 		err = max17201_i2c_read(dev, MAX1720X_REGISTER_TEMP, &reg);
 		if (err < 0) {
 			LOG_ERR("[EP_C] Unable to read Temp, error %d", err);
 			return err;
 		}
-		val->temperature = MAX1720X_COMPUTE_ZEPHYR_TEMPERATURE_K(reg);
+		val->temperature_dk = MAX1720X_COMPUTE_ZEPHYR_TEMPERATURE_K(reg);
 		break;
 
-	case FUEL_GAUGE_VOLTAGE:
+	case FUEL_GAUGE_VOLTAGE_UV:
 		err = max17201_i2c_read(dev, MAX1720X_REGISTER_V_CELL, &reg);
 		if (err < 0) {
 			LOG_ERR("[EP_D] Unable to read VCell, error %d", err);
 			return err;
 		}
-		val->voltage = MAX1720X_COMPUTE_ZEPHYR_VOLTAGE_UV(reg);
+		val->voltage_uv = MAX1720X_COMPUTE_ZEPHYR_VOLTAGE_UV(reg);
 		break;
 
 	case FUEL_GAUGE_STATUS:
